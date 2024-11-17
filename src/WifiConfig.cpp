@@ -8,7 +8,7 @@ WifiConfig::WifiConfig(const char* name, const char* password) {
 
 bool WifiConfig::begin() {
     WiFiManager wifiManager;
-    wifiManager.resetSettings();
+    // wifiManager.resetSettings();
     isConnected = wifiManager.autoConnect(apName, apPassword);
     return isConnected;
 }
