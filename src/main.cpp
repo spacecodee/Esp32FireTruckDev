@@ -3,7 +3,9 @@
 
 #include "WifiConfig.h"
 
-#define LED_RED 16
+#define LED_RED 18
+#define LED_GREEN 19
+
 #define LED_PIN 2
 #define SERVO_PIN 13  // GPIO13 is a good choice for servo
 #define PUMP_PIN 4
@@ -32,6 +34,7 @@ void moveBackward();
 void turnLeft();
 void turnRight();
 void stopMotors();
+void moveServo();
 void setupPump();
 void setPumpSpeed(int speed);
 
@@ -40,6 +43,9 @@ void setup() {
 
     // LED setup
     pinMode(LED_RED, OUTPUT);
+    pinMode(LED_GREEN, OUTPUT);
+
+    // LED Wi-FI setup
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, LOW);
 
@@ -68,10 +74,31 @@ void setup() {
 }
 
 void loop() {
-    digitalWrite(LED_RED, HIGH);
-    delay(1000);
-    digitalWrite(LED_RED, LOW);
-    delay(1000);
+    if (!wifi.isWifiConnected()) {
+        digitalWrite(LED_PIN, LOW);
+    } else {
+        digitalWrite(LED_PIN, HIGH);
+        digitalWrite(LED_RED, HIGH);
+        digitalWrite(LED_GREEN, LOW);
+        delay(1000);
+
+        // Smooth servo movement
+
+        digitalWrite(LED_RED, LOW);
+        digitalWrite(LED_GREEN, HIGH);
+        delay(1000);
+    }
+}
+
+void moveServo() {
+    for (int angle = MIN_ANGLE; angle <= MAX_ANGLE; angle++) {
+        myServo.write(angle);
+        delay(SERVO_DELAY);
+    }
+    for (int angle = MAX_ANGLE; angle >= MIN_ANGLE; angle--) {
+        myServo.write(angle);
+        delay(SERVO_DELAY);
+    }
 }
 
 // Add pump control functions
