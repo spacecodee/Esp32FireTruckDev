@@ -1,47 +1,16 @@
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <ESP32Servo.h>
+#include <WebSocketsServer.h>
 
+#include "PinDefinitions.h"
 #include "WifiConfig.h"
-
-#define LED_RED 18
-#define LED_GREEN 19
-
-#define LED_PIN 2
-#define SERVO_PIN 13  // GPIO13 is a good choice for servo
-
-// Pump configuration
-#define PUMP_PIN 22          // GPIO22 for PWM control
-#define PUMP_FREQUENCY 5000  // 5KHz PWM frequency
-#define PUMP_CHANNEL 0       // PWM channel 0
-#define PUMP_RESOLUTION 8    // 8-bit resolution (0-255)
-
-// L298N Motor Driver pins
-#define ENA 25  // Enable Motor A
-#define ENB 26  // Enable Motor B
-#define IN1 27  // Motor A control 1
-#define IN2 14  // Motor A control 2
-#define IN3 12  // Motor B control 1
-#define IN4 33  // Motor B control 2
-
-#define MIN_ANGLE 30
-#define MAX_ANGLE 130
-#define INITIAL_POSITION 0
-#define SERVO_DELAY 15
-// Motor speed
-#define MOTOR_SPEED 255
-
-// Add to pin definitions
-#define FLAME_SENSOR_1 34  // ADC1_6
-#define FLAME_SENSOR_2 35  // ADC1_7
-#define FLAME_SENSOR_3 32  // ADC1_4
-
-// ADC configuration
-#define ADC_RESOLUTION 1023  // 12-bit ADC
-#define MAPPED_MIN 1
-#define MAPPED_MAX 100
 
 WifiConfig wifi;
 Servo myServo;
+
+// Create WebSocket instance
+WebSocketsServer webSocket = WebSocketsServer(WEBSOCKET_PORT);
 
 void setupMotors();
 void moveForward();
@@ -56,6 +25,8 @@ void setPumpSpeed(uint8_t speed);
 void setupFlameSensors();
 int readFlameValue(int sensorPin);
 void readAllFlameSensors();
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length);
+void sendSensorData();
 
 void setup() {
     Serial.begin(115200);
@@ -85,6 +56,10 @@ void setup() {
         Serial.println("Connected!");
         Serial.print("IP Address: ");
         Serial.println(wifi.getLocalIP());
+
+        // Start WebSocket server
+        webSocket.begin();
+        webSocket.onEvent(webSocketEvent);
         digitalWrite(LED_PIN, HIGH);
     } else {
         Serial.println("Failed to connect");
@@ -97,6 +72,8 @@ void loop() {
         digitalWrite(LED_PIN, LOW);
     } else {
         digitalWrite(LED_PIN, HIGH);
+        webSocket.loop();
+        sendSensorData();
         delay(500);
     }
 }
@@ -216,4 +193,33 @@ void readAllFlameSensors() {
     int flame3 = readFlameValue(FLAME_SENSOR_3);
 
     Serial.printf("Flame Sensors: %d%%, %d%%, %d%%\n", flame1, flame2, flame3);
+}
+
+// WebSocket events handler
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length) {
+    switch (type) {
+        case WStype_DISCONNECTED:
+            Serial.printf("[%u] Disconnected!\n", num);
+            break;
+        case WStype_CONNECTED:
+            Serial.printf("[%u] Connected!\n", num);
+            break;
+    }
+}
+
+// Function to send sensor data
+void sendSensorData() {
+    JsonDocument doc;
+
+    // Add sensor readings
+    doc["flame1"] = readFlameValue(FLAME_SENSOR_1);
+    doc["flame2"] = readFlameValue(FLAME_SENSOR_2);
+    doc["flame3"] = readFlameValue(FLAME_SENSOR_3);
+    doc["connected"] = wifi.isWifiConnected();
+
+    String jsonString;
+    serializeJson(doc, jsonString);
+
+    // Broadcast to all connected clients
+    webSocket.broadcastTXT(jsonString);
 }
