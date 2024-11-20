@@ -9,11 +9,32 @@ WebSocketConfig::WebSocketConfig() : webSocket(WEBSOCKET_PORT) {
 }
 
 void WebSocketConfig::begin() {
+    Serial.println("Starting WebSocket server...");
+
+    // Print network details
+    Serial.print("MAC Address: ");
+    Serial.println(WiFi.macAddress());
+    Serial.print("IP Address: ");
+    Serial.println(WiFi.localIP());
+    Serial.print("Subnet Mask: ");
+    Serial.println(WiFi.subnetMask());
+    Serial.print("Gateway IP: ");
+    Serial.println(WiFi.gatewayIP());
+
     webSocket.begin();
+    webSocket.enableHeartbeat(15000, 3000, 2);
     webSocket.onEvent(webSocketEvent);
+
+    Serial.println("WebSocket server started on port 81");
 }
 
-void WebSocketConfig::loop() { webSocket.loop(); }
+void WebSocketConfig::loop() {
+    if (WiFi.status() != WL_CONNECTED) {
+        Serial.println("WiFi connection lost!");
+        return;
+    }
+    webSocket.loop();
+}
 
 void WebSocketConfig::sendData(const JsonDocument& doc) {
     String jsonString;
@@ -22,22 +43,22 @@ void WebSocketConfig::sendData(const JsonDocument& doc) {
 }
 
 void WebSocketConfig::webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length) {
-    if (instance) {  // Check if instance exists
-        switch (type) {
-            case WStype_DISCONNECTED:
-                Serial.printf("[%u] Disconnected!\n", num);
-                break;
-            case WStype_CONNECTED:
-                Serial.printf("[%u] Connected!\n", num);
-                break;
-            case WStype_TEXT: {
-                JsonDocument doc;
-                deserializeJson(doc, payload);
-                instance->handleCommand(doc);  // Call through instance
-                break;
-            }
-                // ... other cases ...
-        }
+    if (!instance) return;
+
+    switch (type) {
+        case WStype_DISCONNECTED:
+            Serial.printf("[WS] Client #%u disconnected\n", num);
+            break;
+        case WStype_CONNECTED: {
+            IPAddress ip = instance->webSocket.remoteIP(num);
+            Serial.printf("[WS] Client #%u connected from %d.%d.%d.%d\n", num, ip[0], ip[1], ip[2], ip[3]);
+        } break;
+        case WStype_TEXT:
+            Serial.printf("[%u] Received text: %s\n", num, payload);
+            break;
+        case WStype_ERROR:
+            Serial.printf("[WS] Error from client #%u\n", num);
+            break;
     }
 }
 

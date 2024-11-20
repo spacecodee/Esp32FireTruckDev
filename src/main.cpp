@@ -41,9 +41,6 @@ void setup() {
     myServo.attach(SERVO_PIN, 500, 2400);  // Adjust min/max pulse width if needed
     myServo.write(INITIAL_POSITION);       // Set initial position
 
-    // Add this line to pass servo to WebSocket handler
-    webSocket.setServo(&myServo);
-
     // Motor setup
     setupMotors();
 
@@ -60,6 +57,9 @@ void setup() {
         Serial.println("Failed to connect");
         digitalWrite(LED_PIN, LOW);
     }
+
+    // Add this line to pass servo to WebSocket handler
+    webSocket.setServo(&myServo);
 }
 
 void loop() {
@@ -182,7 +182,7 @@ void readAllFlameSensors() {
 // Function to send sensor data
 void sendEspConnectionData() {
     JsonDocument doc;
-
+    doc["type"] = "connection";
     doc["connected"] = wifi.isWifiConnected();
 
     webSocket.sendData(doc);
