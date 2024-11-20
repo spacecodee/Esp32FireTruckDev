@@ -34,7 +34,7 @@
 #define FLAME_SENSOR_3 32
 
 // ADC configuration
-#define ADC_RESOLUTION 4095
+#define ADC_RESOLUTION 1023
 #define MAPPED_MIN 1
 #define MAPPED_MAX 100
 

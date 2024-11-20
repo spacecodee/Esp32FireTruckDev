@@ -23,7 +23,7 @@ void setPumpSpeed(uint8_t speed);
 void setupFlameSensors();
 int readFlameValue(int sensorPin);
 void readAllFlameSensors();
-void sendSensorData();
+void sendEspConnectionData();
 
 void setup() {
     Serial.begin(115200);
@@ -66,7 +66,7 @@ void loop() {
     } else {
         digitalWrite(LED_PIN, HIGH);
         webSocket.loop();
-        sendSensorData();
+        sendEspConnectionData();
         delay(500);
     }
 }
@@ -189,11 +189,9 @@ void readAllFlameSensors() {
 }
 
 // Function to send sensor data
-void sendSensorData() {
+void sendEspConnectionData() {
     JsonDocument doc;
-    doc["flame1"] = readFlameValue(FLAME_SENSOR_1);
-    doc["flame2"] = readFlameValue(FLAME_SENSOR_2);
-    doc["flame3"] = readFlameValue(FLAME_SENSOR_3);
+
     doc["connected"] = wifi.isWifiConnected();
 
     webSocket.sendData(doc);
