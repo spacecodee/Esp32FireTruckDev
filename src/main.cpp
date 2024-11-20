@@ -16,7 +16,6 @@ void moveBackward();
 void turnLeft();
 void turnRight();
 void stopMotors();
-void moveServo();
 void setupPump();
 void controlPump(bool state);
 void setPumpSpeed(uint8_t speed);
@@ -41,6 +40,9 @@ void setup() {
     myServo.setPeriodHertz(50);            // Standard 50hz servo
     myServo.attach(SERVO_PIN, 500, 2400);  // Adjust min/max pulse width if needed
     myServo.write(INITIAL_POSITION);       // Set initial position
+
+    // Add this line to pass servo to WebSocket handler
+    webSocket.setServo(&myServo);
 
     // Motor setup
     setupMotors();
@@ -68,17 +70,6 @@ void loop() {
         webSocket.loop();
         sendEspConnectionData();
         delay(500);
-    }
-}
-
-void moveServo() {
-    for (int angle = MIN_ANGLE; angle <= MAX_ANGLE; angle++) {
-        myServo.write(angle);
-        delay(SERVO_DELAY);
-    }
-    for (int angle = MAX_ANGLE; angle >= MIN_ANGLE; angle--) {
-        myServo.write(angle);
-        delay(SERVO_DELAY);
     }
 }
 

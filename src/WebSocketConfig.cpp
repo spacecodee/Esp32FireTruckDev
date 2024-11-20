@@ -43,11 +43,11 @@ void WebSocketConfig::webSocketEvent(uint8_t num, WStype_t type, uint8_t* payloa
 
 void WebSocketConfig::handleCommand(const JsonDocument& doc) {
     if (doc["command"].is<const char*>()) {
-        receiveEspControlData(doc);
+        handleControlCommands(doc);
     }
 }
 
-void WebSocketConfig::receiveEspControlData(const JsonDocument& doc) {
+void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
     const char* command = doc["command"];
 
     if (strcmp(command, "led") == 0) {
@@ -60,11 +60,56 @@ void WebSocketConfig::receiveEspControlData(const JsonDocument& doc) {
             digitalWrite(LED_GREEN, state ? HIGH : LOW);
         }
 
-        // Send back updated status
+        // Send LED status
         JsonDocument response;
         response["type"] = "status";
         response["led_red"] = digitalRead(LED_RED);
         response["led_green"] = digitalRead(LED_GREEN);
         sendData(response);
+    } else if (strcmp(command, "servo") == 0 && servo) {
+        Serial.println("Servo command received");
+        Serial.println(doc["type"].as<const char*>());
+
+        if (doc["type"] == "sweep") {
+            int startAngle = doc["startAngle"] | MIN_ANGLE;
+            int endAngle = doc["endAngle"] | MAX_ANGLE;
+
+            // Forward sweep
+            for (int angle = startAngle; angle <= endAngle; angle++) {
+                servo->write(angle);
+                delay(SERVO_DELAY);
+
+                // Send progress
+                JsonDocument response;
+                response["type"] = "status";
+                response["servo_angle"] = angle;
+                response["direction"] = "forward";
+                sendData(response);
+            }
+
+            // Backward sweep
+            for (int angle = endAngle; angle >= startAngle; angle--) {
+                servo->write(angle);
+                delay(SERVO_DELAY);
+
+                // Send progress
+                JsonDocument response;
+                response["type"] = "status";
+                response["servo_angle"] = angle;
+                response["direction"] = "backward";
+                sendData(response);
+            }
+        } else {  // Single position move
+            int angle = doc["angle"] | -1;
+            if (angle >= MIN_ANGLE && angle <= MAX_ANGLE) {
+                servo->write(angle);
+
+                // Send servo status
+                JsonDocument response;
+                response["type"] = "status";
+                response["servo_angle"] = angle;
+                sendData(response);
+            }
+        }
     }
 }
