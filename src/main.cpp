@@ -26,37 +26,22 @@ void sendEspConnectionData();
 
 void setup() {
     Serial.begin(115200);
+    delay(2000);
+    Serial.println("\n\n=== ESP32 Starting ===");
 
-    // LED setup
+    pinMode(LED_PIN, OUTPUT);
     pinMode(LED_RED, OUTPUT);
     pinMode(LED_GREEN, OUTPUT);
-
-    // LED Wi-FI setup
-    pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, LOW);
+    digitalWrite(LED_RED, LOW);
+    digitalWrite(LED_GREEN, LOW);
+    Serial.println("LEDs initialized");
 
-    // Servo setup
-    ESP32PWM::allocateTimer(0);
-    myServo.setPeriodHertz(50);            // Standard 50hz servo
-    myServo.attach(SERVO_PIN, 500, 2400);  // Adjust min/max pulse width if needed
-    myServo.write(INITIAL_POSITION);       // Set initial position
-
-    // Motor setup
-    setupMotors();
-
-    // Pump setup
-    setupPump();
-
-    // WiFi setup
     if (wifi.begin()) {
-        Serial.println("Connected!");
-        Serial.println(wifi.getLocalIP());
-        webSocket.begin();
-        webSocket.setServo(&myServo);  // Make sure this is after begin()
         digitalWrite(LED_PIN, HIGH);
-    } else {
-        Serial.println("Failed to connect");
-        digitalWrite(LED_PIN, LOW);
+        webSocket.begin();
+        Serial.println("WiFi Connected!");
+        Serial.println(wifi.getLocalIP());
     }
 }
 

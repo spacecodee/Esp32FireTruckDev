@@ -6,13 +6,6 @@
 #define LED_GREEN 19
 #define LED_PIN 2
 
-// Servo configuration
-#define SERVO_PIN 13
-#define MIN_ANGLE 30
-#define MAX_ANGLE 130
-#define INITIAL_POSITION 0
-#define SERVO_DELAY 15
-
 // Pump configuration
 #define PUMP_PIN 22
 #define PUMP_FREQUENCY 5000
@@ -41,4 +34,4 @@
 // WebSocket
 #define WEBSOCKET_PORT 81
 
-#endif  // PIN_DEFINITIONS_H
+#endif
