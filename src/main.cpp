@@ -52,6 +52,7 @@ void setup() {
         Serial.println("Connected!");
         Serial.println(wifi.getLocalIP());
         webSocket.begin();
+        webSocket.setServo(&myServo);  // Make sure this is after begin()
         digitalWrite(LED_PIN, HIGH);
     } else {
         Serial.println("Failed to connect");
@@ -65,11 +66,17 @@ void setup() {
 void loop() {
     if (!wifi.isWifiConnected()) {
         digitalWrite(LED_PIN, LOW);
+        stopMotors();  // Safety: stop motors if WiFi disconnects
     } else {
         digitalWrite(LED_PIN, HIGH);
-        webSocket.loop();
-        sendEspConnectionData();
-        delay(500);
+        webSocket.loop();  // Handle WebSocket events
+
+        // Only send connection data every 500ms
+        static unsigned long lastUpdate = 0;
+        if (millis() - lastUpdate > 500) {
+            sendEspConnectionData();
+            lastUpdate = millis();
+        }
     }
 }
 

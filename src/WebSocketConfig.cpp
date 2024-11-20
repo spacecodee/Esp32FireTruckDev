@@ -11,21 +11,43 @@ WebSocketConfig::WebSocketConfig() : webSocket(WEBSOCKET_PORT) {
 void WebSocketConfig::begin() {
     Serial.println("Starting WebSocket server...");
 
-    // Print network details
-    Serial.print("MAC Address: ");
-    Serial.println(WiFi.macAddress());
-    Serial.print("IP Address: ");
-    Serial.println(WiFi.localIP());
-    Serial.print("Subnet Mask: ");
-    Serial.println(WiFi.subnetMask());
-    Serial.print("Gateway IP: ");
-    Serial.println(WiFi.gatewayIP());
+    // Wait for WiFi connection
+    int attempts = 0;
+    while (WiFi.status() != WL_CONNECTED && attempts < 10) {
+        Serial.print(".");
+        delay(1000);
+        attempts++;
+    }
+
+    if (WiFi.status() != WL_CONNECTED) {
+        Serial.println("WiFi connection failed!");
+        return;
+    }
+
+    // Verify network config
+    IPAddress ip = WiFi.localIP();
+    if (ip[0] == 0) {
+        Serial.println("Invalid IP address!");
+        return;
+    }
+
+    // Print detailed network info
+    Serial.println("\nNetwork Configuration:");
+    Serial.printf("IP: %s\n", WiFi.localIP().toString().c_str());
+    Serial.printf("Subnet: %s\n", WiFi.subnetMask().toString().c_str());
+    Serial.printf("Gateway: %s\n", WiFi.gatewayIP().toString().c_str());
+    Serial.printf("DNS: %s\n", WiFi.dnsIP().toString().c_str());
+    Serial.printf("Channel: %d\n", WiFi.channel());
+    Serial.printf("RSSI: %d dBm\n", WiFi.RSSI());
+
+    Serial.println("\nStarting WebSocket on:");
+    Serial.printf("ws://%s:%d\n", WiFi.localIP().toString().c_str(), WEBSOCKET_PORT);
 
     webSocket.begin();
     webSocket.enableHeartbeat(15000, 3000, 2);
     webSocket.onEvent(webSocketEvent);
 
-    Serial.println("WebSocket server started on port 81");
+    Serial.println("WebSocket server ready!");
 }
 
 void WebSocketConfig::loop() {
@@ -49,10 +71,12 @@ void WebSocketConfig::webSocketEvent(uint8_t num, WStype_t type, uint8_t* payloa
         case WStype_DISCONNECTED:
             Serial.printf("[WS] Client #%u disconnected\n", num);
             break;
-        case WStype_CONNECTED: {
-            IPAddress ip = instance->webSocket.remoteIP(num);
-            Serial.printf("[WS] Client #%u connected from %d.%d.%d.%d\n", num, ip[0], ip[1], ip[2], ip[3]);
-        } break;
+        case WStype_CONNECTED:
+            Serial.printf("[WS] Client #%u connected from %s\n", num,
+                          instance->webSocket.remoteIP(num).toString().c_str());
+            // Send initial status
+            instance->sendEspConnectionData();
+            break;
         case WStype_TEXT:
             Serial.printf("[%u] Received text: %s\n", num, payload);
             break;
@@ -133,4 +157,11 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
             }
         }
     }
+}
+
+void WebSocketConfig::sendEspConnectionData() {
+    JsonDocument doc;
+    doc["type"] = "connection";
+    doc["connected"] = (WiFi.status() == WL_CONNECTED);
+    sendData(doc);
 }
