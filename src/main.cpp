@@ -8,7 +8,12 @@
 
 #define LED_PIN 2
 #define SERVO_PIN 13  // GPIO13 is a good choice for servo
-#define PUMP_PIN 22
+
+// Pump configuration
+#define PUMP_PIN 22          // GPIO22 for PWM control
+#define PUMP_FREQUENCY 5000  // 5KHz PWM frequency
+#define PUMP_CHANNEL 0       // PWM channel 0
+#define PUMP_RESOLUTION 8    // 8-bit resolution (0-255)
 
 // L298N Motor Driver pins
 #define ENA 25                 // Enable Motor A
@@ -37,6 +42,7 @@ void stopMotors();
 void moveServo();
 void setupPump();
 void controlPump(bool state);
+void setPumpSpeed(uint8_t speed);
 
 void setup() {
     Serial.begin(115200);
@@ -91,9 +97,9 @@ void loop() {
 
         // Activate pump
         Serial.println("Activating pump");
-        controlPump(true);  // Turn pump ON
+        setPumpSpeed(255);  // Turn pump ON
         delay(1000);
-        controlPump(false);  // Turn pump OFF
+        setPumpSpeed(0);  // Turn pump OFF
 
         // Red OFF, Green ON
         digitalWrite(LED_RED, LOW);
@@ -113,10 +119,17 @@ void moveServo() {
     }
 }
 
-// Add pump control functions
+// Update pump setup
 void setupPump() {
-    pinMode(PUMP_PIN, OUTPUT);
-    digitalWrite(PUMP_PIN, LOW);  // Ensure pump is off initially
+    ledcSetup(PUMP_CHANNEL, PUMP_FREQUENCY, PUMP_RESOLUTION);
+    ledcAttachPin(PUMP_PIN, PUMP_CHANNEL);
+    ledcWrite(PUMP_CHANNEL, 0);  // Start with pump off
+}
+
+// Add pump speed control
+void setPumpSpeed(uint8_t speed) {
+    // speed: 0-255 (0=off, 255=full speed)
+    ledcWrite(PUMP_CHANNEL, speed);
 }
 
 void controlPump(bool state) {
