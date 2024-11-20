@@ -64,6 +64,14 @@ void WebSocketConfig::sendData(const JsonDocument& doc) {
     webSocket.broadcastTXT(jsonString);
 }
 
+void WebSocketConfig::sendLedStatus() {
+    JsonDocument response;
+    response["type"] = "status";
+    response["led_red"] = digitalRead(LED_RED);
+    response["led_green"] = digitalRead(LED_GREEN);
+    sendData(response);
+}
+
 void WebSocketConfig::webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length) {
     if (!instance) return;
 
@@ -78,6 +86,7 @@ void WebSocketConfig::webSocketEvent(uint8_t num, WStype_t type, uint8_t* payloa
             Serial.printf("[WS] Client #%u connected from %s\n", num,
                           instance->webSocket.remoteIP(num).toString().c_str());
             instance->sendEspConnectionData();
+            instance->sendLedStatus();  // Send initial LED states
             break;
 
         case WStype_t::WStype_TEXT: {  // Added scope brackets
