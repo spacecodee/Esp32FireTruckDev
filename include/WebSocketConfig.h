@@ -2,6 +2,7 @@
 #define WEBSOCKET_CONFIG_H
 
 #include <ArduinoJson.h>
+#include <ESP32Servo.h>
 #include <WebSocketsServer.h>
 
 class WebSocketConfig {
@@ -9,6 +10,7 @@ class WebSocketConfig {
     WebSocketsServer webSocket;
     static WebSocketConfig* instance;
     void handleCommand(const JsonDocument& doc);
+    Servo* servo;  // Add servo pointer
 
    public:
     WebSocketConfig();
@@ -17,9 +19,8 @@ class WebSocketConfig {
     void sendData(const JsonDocument& doc);
     void sendEspConnectionData();
     static void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length);
-
-    // Reference to servo
     void handleControlCommands(const JsonDocument& doc);
+    void setServo(Servo* s) { servo = s; }  // Add setter
 };
 
 #endif

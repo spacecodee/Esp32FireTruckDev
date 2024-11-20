@@ -46,6 +46,7 @@ void setup() {
     if (wifi.begin()) {
         digitalWrite(LED_PIN, HIGH);
         webSocket.begin();
+        webSocket.setServo(&myServo);
         Serial.println("WiFi Connected!");
         Serial.println(wifi.getLocalIP());
     }
