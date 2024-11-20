@@ -42,7 +42,7 @@ void WebSocketConfig::webSocketEvent(uint8_t num, WStype_t type, uint8_t* payloa
 }
 
 void WebSocketConfig::handleCommand(const JsonDocument& doc) {
-    if (doc.containsKey("led")) {
+    if (doc["led"].is<const char*>()) {
         const char* led = doc["led"];
         bool state = doc["state"];
 
