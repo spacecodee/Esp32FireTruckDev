@@ -58,9 +58,6 @@ void setup() {
         Serial.println("Failed to connect");
         digitalWrite(LED_PIN, LOW);
     }
-
-    // Add this line to pass servo to WebSocket handler
-    webSocket.setServo(&myServo);
 }
 
 void loop() {
