@@ -1,6 +1,9 @@
 #ifndef PIN_DEFINITIONS_H
 #define PIN_DEFINITIONS_H
 
+// Servo configuration
+#define MY_SERVO_PIN 13
+
 // LED Pins
 #define LED_RED 18
 #define LED_GREEN 19

@@ -10,6 +10,7 @@ WifiConfig wifi;
 WebSocketConfig webSocket;
 Servo myServo;
 
+void moveServo();
 void setupMotors();
 void moveForward();
 void moveBackward();
@@ -28,6 +29,11 @@ void setup() {
     Serial.begin(115200);
     delay(2000);
     Serial.println("\n\n=== ESP32 Starting ===");
+
+    ESP32PWM::allocateTimer(0);
+    myServo.setPeriodHertz(50);  // standard 50 hz servo
+    myServo.attach(MY_SERVO_PIN, 1000, 2000);
+    myServo.write(0);
 
     pinMode(LED_PIN, OUTPUT);
     pinMode(LED_RED, OUTPUT);
@@ -61,7 +67,17 @@ void loop() {
         }
     }
 }
-
+void moveServo() {
+    for (int pos = 0; pos <= 180; pos += 1) {  // goes from 0 degrees to 180 degrees
+        // in steps of 1 degree
+        myServo.write(pos);  // tell servo to go to position in variable 'pos'
+        delay(15);           // waits 15ms for the servo to reach the position
+    }
+    for (int pos = 180; pos >= 0; pos -= 1) {  // goes from 180 degrees to 0 degrees
+        myServo.write(pos);                    // tell servo to go to position in variable 'pos'
+        delay(15);                             // waits 15ms for the servo to reach the position
+    }
+}
 // Update pump setup
 void setupPump() {
     ledcSetup(PUMP_CHANNEL, PUMP_FREQUENCY, PUMP_RESOLUTION);
