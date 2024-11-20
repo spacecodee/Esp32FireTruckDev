@@ -7,6 +7,8 @@
 class WebSocketConfig {
    private:
     WebSocketsServer webSocket;
+    void handleCommand(const JsonDocument& doc);
+    static WebSocketConfig* instance;  // Add static instance pointer
 
    public:
     WebSocketConfig();
