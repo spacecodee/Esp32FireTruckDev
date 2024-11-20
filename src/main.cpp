@@ -8,7 +8,7 @@
 
 #define LED_PIN 2
 #define SERVO_PIN 13  // GPIO13 is a good choice for servo
-#define PUMP_PIN 4
+#define PUMP_PIN 22
 
 // L298N Motor Driver pins
 #define ENA 25                 // Enable Motor A
@@ -36,7 +36,7 @@ void turnRight();
 void stopMotors();
 void moveServo();
 void setupPump();
-void setPumpSpeed(int speed);
+void controlPump(bool state);
 
 void setup() {
     Serial.begin(115200);
@@ -78,12 +78,24 @@ void loop() {
         digitalWrite(LED_PIN, LOW);
     } else {
         digitalWrite(LED_PIN, HIGH);
+
+        // Red ON, Green OFF
         digitalWrite(LED_RED, HIGH);
         digitalWrite(LED_GREEN, LOW);
         delay(1000);
 
-        // Smooth servo movement
+        // Move servo
+        Serial.println("Moving servo");
+        moveServo();
+        delay(1000);
 
+        // Activate pump
+        Serial.println("Activating pump");
+        controlPump(true);  // Turn pump ON
+        delay(1000);
+        controlPump(false);  // Turn pump OFF
+
+        // Red OFF, Green ON
         digitalWrite(LED_RED, LOW);
         digitalWrite(LED_GREEN, HIGH);
         delay(1000);
@@ -107,9 +119,9 @@ void setupPump() {
     digitalWrite(PUMP_PIN, LOW);  // Ensure pump is off initially
 }
 
-void setPumpSpeed(int speed) {
-    // speed: 0-255 (0=off, 255=full speed)
-    analogWrite(PUMP_PIN, speed);
+void controlPump(bool state) {
+    // state: true = ON, false = OFF
+    digitalWrite(PUMP_PIN, state ? HIGH : LOW);
 }
 
 void setupMotors() {
