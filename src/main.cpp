@@ -1,16 +1,14 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <ESP32Servo.h>
-#include <WebSocketsServer.h>
 
 #include "PinDefinitions.h"
+#include "WebSocketConfig.h"
 #include "WifiConfig.h"
 
 WifiConfig wifi;
+WebSocketConfig webSocket;
 Servo myServo;
-
-// Create WebSocket instance
-WebSocketsServer webSocket = WebSocketsServer(WEBSOCKET_PORT);
 
 void setupMotors();
 void moveForward();
@@ -25,7 +23,6 @@ void setPumpSpeed(uint8_t speed);
 void setupFlameSensors();
 int readFlameValue(int sensorPin);
 void readAllFlameSensors();
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length);
 void sendSensorData();
 
 void setup() {
@@ -54,12 +51,8 @@ void setup() {
     // WiFi setup
     if (wifi.begin()) {
         Serial.println("Connected!");
-        Serial.print("IP Address: ");
         Serial.println(wifi.getLocalIP());
-
-        // Start WebSocket server
         webSocket.begin();
-        webSocket.onEvent(webSocketEvent);
         digitalWrite(LED_PIN, HIGH);
     } else {
         Serial.println("Failed to connect");
@@ -195,31 +188,13 @@ void readAllFlameSensors() {
     Serial.printf("Flame Sensors: %d%%, %d%%, %d%%\n", flame1, flame2, flame3);
 }
 
-// WebSocket events handler
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length) {
-    switch (type) {
-        case WStype_DISCONNECTED:
-            Serial.printf("[%u] Disconnected!\n", num);
-            break;
-        case WStype_CONNECTED:
-            Serial.printf("[%u] Connected!\n", num);
-            break;
-    }
-}
-
 // Function to send sensor data
 void sendSensorData() {
     JsonDocument doc;
-
-    // Add sensor readings
     doc["flame1"] = readFlameValue(FLAME_SENSOR_1);
     doc["flame2"] = readFlameValue(FLAME_SENSOR_2);
     doc["flame3"] = readFlameValue(FLAME_SENSOR_3);
     doc["connected"] = wifi.isWifiConnected();
 
-    String jsonString;
-    serializeJson(doc, jsonString);
-
-    // Broadcast to all connected clients
-    webSocket.broadcastTXT(jsonString);
+    webSocket.sendData(doc);
 }
