@@ -97,27 +97,7 @@ void loop() {
         digitalWrite(LED_PIN, LOW);
     } else {
         digitalWrite(LED_PIN, HIGH);
-
-        // Red ON, Green OFF
-        digitalWrite(LED_RED, HIGH);
-        digitalWrite(LED_GREEN, LOW);
-        delay(1000);
-
-        // Move servo
-        Serial.println("Moving servo");
-        moveServo();
-        delay(1000);
-
-        // Activate pump
-        Serial.println("Activating pump");
-        setPumpSpeed(250);  // Turn pump ON
-        delay(1000);
-        setPumpSpeed(0);  // Turn pump OFF
-
-        // Red OFF, Green ON
-        digitalWrite(LED_RED, LOW);
-        digitalWrite(LED_GREEN, HIGH);
-        delay(1000);
+        delay(500);
     }
 }
 
