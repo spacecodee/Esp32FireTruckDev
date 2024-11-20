@@ -67,21 +67,35 @@ void WebSocketConfig::sendData(const JsonDocument& doc) {
 void WebSocketConfig::webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length) {
     if (!instance) return;
 
+    JsonDocument doc;
+
     switch (type) {
-        case WStype_DISCONNECTED:
+        case WStype_t::WStype_DISCONNECTED:
             Serial.printf("[WS] Client #%u disconnected\n", num);
             break;
-        case WStype_CONNECTED:
+
+        case WStype_t::WStype_CONNECTED:
             Serial.printf("[WS] Client #%u connected from %s\n", num,
                           instance->webSocket.remoteIP(num).toString().c_str());
-            // Send initial status
             instance->sendEspConnectionData();
             break;
-        case WStype_TEXT:
+
+        case WStype_t::WStype_TEXT: {  // Added scope brackets
             Serial.printf("[%u] Received text: %s\n", num, payload);
+            DeserializationError error = deserializeJson(doc, payload);
+            if (!error) {
+                instance->handleCommand(doc);
+            } else {
+                Serial.println("Failed to parse JSON command");
+            }
             break;
-        case WStype_ERROR:
+        }
+
+        case WStype_t::WStype_ERROR:
             Serial.printf("[WS] Error from client #%u\n", num);
+            break;
+
+        default:
             break;
     }
 }
@@ -99,6 +113,9 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
         const char* led = doc["led"];
         bool state = doc["state"];
 
+        // Add debug logging
+        Serial.printf("LED Command - Type: %s, State: %d\n", led, state);
+
         if (strcmp(led, "red") == 0) {
             digitalWrite(LED_RED, state ? HIGH : LOW);
         } else if (strcmp(led, "green") == 0) {
@@ -112,10 +129,9 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
         response["led_green"] = digitalRead(LED_GREEN);
         sendData(response);
     } else if (strcmp(command, "servo") == 0 && servo) {
-        Serial.println("Servo command received");
-        Serial.println(doc["type"].as<const char*>());
-
         if (doc["type"] == "sweep") {
+            Serial.println("Servo sweep command");
+
             int startAngle = doc["startAngle"] | MIN_ANGLE;
             int endAngle = doc["endAngle"] | MAX_ANGLE;
 
