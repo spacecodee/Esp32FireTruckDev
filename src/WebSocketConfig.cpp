@@ -109,7 +109,46 @@ void WebSocketConfig::handleCommand(const JsonDocument& doc) {
 void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
     const char* command = doc["command"];
 
-    if (strcmp(command, "led") == 0) {
+    if (strcmp(command, "servo") == 0) {
+        Serial.println("Received servo command");
+
+        if (!servo) {
+            Serial.println("Error: Servo not initialized!");
+            return;
+        }
+
+        // Remove type check since we only want sweep
+        Serial.println("Starting servo sweep");
+        Serial.printf("Sweep range: %d to %d degrees\n", MIN_ANGLE, MAX_ANGLE);
+
+        // Forward sweep
+        Serial.println("Forward sweep");
+        for (int angle = MIN_ANGLE; angle <= MAX_ANGLE; angle++) {
+            servo->write(angle);
+            Serial.printf("Servo angle: %d\n", angle);
+            delay(SERVO_DELAY);
+
+            JsonDocument response;
+            response["type"] = "status";
+            response["servo_angle"] = angle;
+            response["direction"] = "forward";
+            sendData(response);
+        }
+
+        // Backward sweep
+        Serial.println("Backward sweep");
+        for (int angle = MAX_ANGLE; angle >= MIN_ANGLE; angle--) {
+            servo->write(angle);
+            Serial.printf("Servo angle: %d\n", angle);
+            delay(SERVO_DELAY);
+
+            JsonDocument response;
+            response["type"] = "status";
+            response["servo_angle"] = angle;
+            response["direction"] = "backward";
+            sendData(response);
+        }
+    } else if (strcmp(command, "led") == 0) {
         const char* led = doc["led"];
         bool state = doc["state"];
 
@@ -128,46 +167,6 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
         response["led_red"] = digitalRead(LED_RED);
         response["led_green"] = digitalRead(LED_GREEN);
         sendData(response);
-    } else if (strcmp(command, "servo") == 0) {
-        Serial.println("Received servo command");
-
-        if (!servo) {
-            Serial.println("Error: Servo not initialized!");
-            return;
-        }
-
-        if (doc["type"] == "sweep") {
-            Serial.println("Servo sweep command");
-
-            int startAngle = MIN_ANGLE;
-            int endAngle = MAX_ANGLE;
-
-            // Forward sweep
-            for (int angle = startAngle; angle <= endAngle; angle++) {
-                servo->write(angle);
-                delay(SERVO_DELAY);
-
-                // Send progress
-                JsonDocument response;
-                response["type"] = "status";
-                response["servo_angle"] = angle;
-                response["direction"] = "forward";
-                sendData(response);
-            }
-
-            // Backward sweep
-            for (int angle = endAngle; angle >= startAngle; angle--) {
-                servo->write(angle);
-                delay(SERVO_DELAY);
-
-                // Send progress
-                JsonDocument response;
-                response["type"] = "status";
-                response["servo_angle"] = angle;
-                response["direction"] = "backward";
-                sendData(response);
-            }
-        }
     }
 }
 
