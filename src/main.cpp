@@ -16,12 +16,12 @@
 #define PUMP_RESOLUTION 8    // 8-bit resolution (0-255)
 
 // L298N Motor Driver pins
-#define ENA 25                 // Enable Motor A
-#define ENB 26                 // Enable Motor B
-#define FIRST_RIGHT_WHEEL 27   // Motor A control 1
-#define SECOND_RIGHT_WHEEL 14  // Motor A control 2
-#define FIRST_LEFT_WHEEL 12    // Motor B control 1
-#define SECOND_LEFT_WHEEL 33   // Motor B control 2
+#define ENA 25  // Enable Motor A
+#define ENB 26  // Enable Motor B
+#define IN1 27  // Motor A control 1
+#define IN2 14  // Motor A control 2
+#define IN3 12  // Motor B control 1
+#define IN4 33  // Motor B control 2
 
 #define MIN_ANGLE 30
 #define MAX_ANGLE 130
@@ -29,6 +29,16 @@
 #define SERVO_DELAY 15
 // Motor speed
 #define MOTOR_SPEED 255
+
+// Add to pin definitions
+#define FLAME_SENSOR_1 34  // ADC1_6
+#define FLAME_SENSOR_2 35  // ADC1_7
+#define FLAME_SENSOR_3 32  // ADC1_4
+
+// ADC configuration
+#define ADC_RESOLUTION 1023  // 12-bit ADC
+#define MAPPED_MIN 1
+#define MAPPED_MAX 100
 
 WifiConfig wifi;
 Servo myServo;
@@ -43,6 +53,9 @@ void moveServo();
 void setupPump();
 void controlPump(bool state);
 void setPumpSpeed(uint8_t speed);
+void setupFlameSensors();
+int readFlameValue(int sensorPin);
+void readAllFlameSensors();
 
 void setup() {
     Serial.begin(115200);
@@ -97,7 +110,7 @@ void loop() {
 
         // Activate pump
         Serial.println("Activating pump");
-        setPumpSpeed(255);  // Turn pump ON
+        setPumpSpeed(250);  // Turn pump ON
         delay(1000);
         setPumpSpeed(0);  // Turn pump OFF
 
@@ -140,10 +153,10 @@ void controlPump(bool state) {
 void setupMotors() {
     // Configure motor control pins
     pinMode(ENA, OUTPUT);
-    pinMode(FIRST_RIGHT_WHEEL, OUTPUT);
-    pinMode(SECOND_RIGHT_WHEEL, OUTPUT);
-    pinMode(FIRST_LEFT_WHEEL, OUTPUT);
-    pinMode(SECOND_LEFT_WHEEL, OUTPUT);
+    pinMode(IN1, OUTPUT);
+    pinMode(IN2, OUTPUT);
+    pinMode(IN3, OUTPUT);
+    pinMode(IN4, OUTPUT);
     pinMode(ENB, OUTPUT);
 
     // Initial state - motors stopped
@@ -154,52 +167,73 @@ void moveForward() {
     analogWrite(ENA, MOTOR_SPEED);  // Set speed
     analogWrite(ENB, MOTOR_SPEED);  // Set speed
 
-    digitalWrite(FIRST_RIGHT_WHEEL, LOW);
-    digitalWrite(SECOND_RIGHT_WHEEL, HIGH);
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
 
-    digitalWrite(FIRST_LEFT_WHEEL, LOW);
-    digitalWrite(SECOND_LEFT_WHEEL, HIGH);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);
 }
 
 void turnLeft() {
     analogWrite(ENA, MOTOR_SPEED);  // Set speed
     analogWrite(ENB, MOTOR_SPEED);  // Set speed
 
-    digitalWrite(FIRST_RIGHT_WHEEL, LOW);
-    digitalWrite(SECOND_RIGHT_WHEEL, HIGH);
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
 
-    digitalWrite(FIRST_LEFT_WHEEL, HIGH);
-    digitalWrite(SECOND_LEFT_WHEEL, LOW);
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);
 }
 
 void turnRight() {
     analogWrite(ENA, MOTOR_SPEED);  // Set speed
     analogWrite(ENB, MOTOR_SPEED);  // Set speed
 
-    digitalWrite(FIRST_RIGHT_WHEEL, HIGH);
-    digitalWrite(SECOND_RIGHT_WHEEL, LOW);
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
 
-    digitalWrite(FIRST_LEFT_WHEEL, LOW);
-    digitalWrite(SECOND_LEFT_WHEEL, HIGH);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);
 }
 
 void moveBackward() {
     analogWrite(ENA, MOTOR_SPEED);  // Set speed
     analogWrite(ENB, MOTOR_SPEED);  // Set speed
 
-    digitalWrite(FIRST_RIGHT_WHEEL, HIGH);
-    digitalWrite(SECOND_RIGHT_WHEEL, LOW);
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
 
-    digitalWrite(FIRST_LEFT_WHEEL, HIGH);
-    digitalWrite(SECOND_LEFT_WHEEL, LOW);
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);
 }
 
 void stopMotors() {
-    digitalWrite(FIRST_RIGHT_WHEEL, LOW);
-    digitalWrite(SECOND_RIGHT_WHEEL, LOW);
-    digitalWrite(FIRST_LEFT_WHEEL, LOW);
-    digitalWrite(SECOND_LEFT_WHEEL, LOW);
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, LOW);
 
     analogWrite(ENA, 0);  // Stop speed
     analogWrite(ENB, 0);  // Stop speed
+}
+
+void setupFlameSensors() {
+    // Set pins as inputs
+    pinMode(FLAME_SENSOR_1, INPUT);
+    pinMode(FLAME_SENSOR_2, INPUT);
+    pinMode(FLAME_SENSOR_3, INPUT);
+}
+
+int readFlameValue(int sensorPin) {
+    int rawValue = analogRead(sensorPin);
+    // Map from 0-1023 to 1-100 range
+    return map(rawValue, 0, ADC_RESOLUTION, MAPPED_MIN, MAPPED_MAX);
+}
+
+void readAllFlameSensors() {
+    int flame1 = readFlameValue(FLAME_SENSOR_1);
+    int flame2 = readFlameValue(FLAME_SENSOR_2);
+    int flame3 = readFlameValue(FLAME_SENSOR_3);
+
+    Serial.printf("Flame Sensors: %d%%, %d%%, %d%%\n", flame1, flame2, flame3);
 }
