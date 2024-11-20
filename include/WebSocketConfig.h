@@ -16,6 +16,7 @@ class WebSocketConfig {
     void loop();
     void sendData(const JsonDocument& doc);
     static void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length);
+    void receiveEspControlData(const JsonDocument& doc);
 };
 
 #endif

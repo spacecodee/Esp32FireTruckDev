@@ -42,7 +42,15 @@ void WebSocketConfig::webSocketEvent(uint8_t num, WStype_t type, uint8_t* payloa
 }
 
 void WebSocketConfig::handleCommand(const JsonDocument& doc) {
-    if (doc["led"].is<const char*>()) {
+    if (doc["command"].is<const char*>()) {
+        receiveEspControlData(doc);
+    }
+}
+
+void WebSocketConfig::receiveEspControlData(const JsonDocument& doc) {
+    const char* command = doc["command"];
+
+    if (strcmp(command, "led") == 0) {
         const char* led = doc["led"];
         bool state = doc["state"];
 
@@ -51,5 +59,12 @@ void WebSocketConfig::handleCommand(const JsonDocument& doc) {
         } else if (strcmp(led, "green") == 0) {
             digitalWrite(LED_GREEN, state ? HIGH : LOW);
         }
+
+        // Send back updated status
+        JsonDocument response;
+        response["type"] = "status";
+        response["led_red"] = digitalRead(LED_RED);
+        response["led_green"] = digitalRead(LED_GREEN);
+        sendData(response);
     }
 }
