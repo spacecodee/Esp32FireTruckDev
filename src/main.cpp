@@ -10,7 +10,6 @@ WifiConfig wifi;
 WebSocketConfig webSocket;
 Servo myServo;
 
-void moveServo();
 void setupMotors();
 void moveForward();
 void moveBackward();
@@ -43,6 +42,9 @@ void setup() {
     digitalWrite(LED_GREEN, LOW);
     Serial.println("LEDs initialized");
 
+    // Pump Setup
+    setupPump();
+
     if (wifi.begin()) {
         digitalWrite(LED_PIN, HIGH);
         webSocket.begin();
@@ -55,7 +57,8 @@ void setup() {
 void loop() {
     if (!wifi.isWifiConnected()) {
         digitalWrite(LED_PIN, LOW);
-        stopMotors();  // Safety: stop motors if WiFi disconnects
+        stopMotors();                // Safety: stop motors if WiFi disconnects
+        ledcWrite(PUMP_CHANNEL, 0);  // Safety: stop pump if WiFi disconnects
     } else {
         digitalWrite(LED_PIN, HIGH);
         webSocket.loop();  // Handle WebSocket events
@@ -64,26 +67,32 @@ void loop() {
         static unsigned long lastUpdate = 0;
         if (millis() - lastUpdate > 500) {
             sendEspConnectionData();
+
+            // Ramp up
+            Serial.println("Pump ramping up...");
+            for (int i = 0; i <= 255; i++) {
+                ledcWrite(PUMP_CHANNEL, i);
+                delay(10);
+            }
+            delay(1000);  // Full speed for 1 second
+
+            // Ramp down
+            Serial.println("Pump ramping down...");
+            for (int i = 255; i >= 0; i--) {
+                ledcWrite(PUMP_CHANNEL, i);
+                delay(10);
+            }
+
             lastUpdate = millis();
         }
     }
 }
-void moveServo() {
-    for (int pos = 0; pos <= 180; pos += 1) {  // goes from 0 degrees to 180 degrees
-        // in steps of 1 degree
-        myServo.write(pos);  // tell servo to go to position in variable 'pos'
-        delay(15);           // waits 15ms for the servo to reach the position
-    }
-    for (int pos = 180; pos >= 0; pos -= 1) {  // goes from 180 degrees to 0 degrees
-        myServo.write(pos);                    // tell servo to go to position in variable 'pos'
-        delay(15);                             // waits 15ms for the servo to reach the position
-    }
-}
-// Update pump setup
+
 void setupPump() {
     ledcSetup(PUMP_CHANNEL, PUMP_FREQUENCY, PUMP_RESOLUTION);
     ledcAttachPin(PUMP_PIN, PUMP_CHANNEL);
     ledcWrite(PUMP_CHANNEL, 0);  // Start with pump off
+    Serial.println("Pump initialized");
 }
 
 // Add pump speed control
