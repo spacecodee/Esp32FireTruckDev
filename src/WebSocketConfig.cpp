@@ -159,6 +159,22 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
             response["position"] = pos;
             sendData(response);
         }
+    } else if (strcmp(command, "pump") == 0) {
+        bool state = doc["state"];
+        Serial.printf("Pump Command - State: %d\n", state);
+
+        if (state) {
+            ledcWrite(PUMP_CHANNEL, 255);  // Full speed
+        } else {
+            ledcWrite(PUMP_CHANNEL, 0);  // Stop
+        }
+
+        // Send pump status
+        JsonDocument response;
+        response["type"] = "pump_status";
+        response["state"] = state;
+        response["speed"] = state ? 255 : 0;
+        sendData(response);
     }
 }
 

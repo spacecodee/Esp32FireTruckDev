@@ -67,22 +67,6 @@ void loop() {
         static unsigned long lastUpdate = 0;
         if (millis() - lastUpdate > 500) {
             sendEspConnectionData();
-
-            // Ramp up
-            Serial.println("Pump ramping up...");
-            for (int i = 0; i <= 255; i++) {
-                ledcWrite(PUMP_CHANNEL, i);
-                delay(10);
-            }
-            delay(1000);  // Full speed for 1 second
-
-            // Ramp down
-            Serial.println("Pump ramping down...");
-            for (int i = 255; i >= 0; i--) {
-                ledcWrite(PUMP_CHANNEL, i);
-                delay(10);
-            }
-
             lastUpdate = millis();
         }
     }
