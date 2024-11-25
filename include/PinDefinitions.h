@@ -22,7 +22,7 @@
 #define IN2 14
 #define IN3 12
 #define IN4 33
-#define MOTOR_SPEED 255
+#define MOTOR_SPEED 200
 
 // Flame sensors
 #define FLAME_SENSOR_1 34

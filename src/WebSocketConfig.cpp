@@ -72,7 +72,7 @@ void WebSocketConfig::sendLedStatus() {
     sendData(response);
 }
 
-void WebSocketConfig::webSocketEvent(const uint8_t num, const WStype_t type, uint8_t* payload) {
+void WebSocketConfig::webSocketEvent(const uint8_t num, const WStype_t type, uint8_t* payload, size_t length) {
     if (!instance) return;
 
     switch (type) {
@@ -118,7 +118,28 @@ void WebSocketConfig::handleCommand(const JsonDocument& doc) {
 void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
     const char* command = doc["command"];
 
-    if (strcmp(command, "led") == 0) {
+    if (strcmp(command, "motor") == 0) {
+        const char* direction = doc["direction"];
+        Serial.printf("Motor Command - Direction: %s\n", direction);
+
+        if (strcmp(direction, "forward") == 0) {
+            moveForward();
+        } else if (strcmp(direction, "backward") == 0) {
+            moveBackward();
+        } else if (strcmp(direction, "left") == 0) {
+            turnLeft();
+        } else if (strcmp(direction, "right") == 0) {
+            turnRight();
+        } else if (strcmp(direction, "stop") == 0) {
+            stopMotors();
+        }
+
+        // Send motor status
+        JsonDocument response;
+        response["type"] = "motor_status";
+        response["direction"] = direction;
+        sendData(response);
+    } else if (strcmp(command, "led") == 0) {
         const char* led = doc["led"];
         bool state = doc["state"];
 
@@ -183,4 +204,58 @@ void WebSocketConfig::sendEspConnectionData() {
     doc["type"] = "connection";
     doc["connected"] = (WiFiClass::status() == WL_CONNECTED);
     sendData(doc);
+}
+
+void WebSocketConfig::moveForward() {
+    analogWrite(ENA, MOTOR_SPEED);  // Set speed
+    analogWrite(ENB, MOTOR_SPEED);  // Set speed
+
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
+
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);
+}
+
+void WebSocketConfig::turnLeft() {
+    analogWrite(ENA, MOTOR_SPEED);  // Set speed
+    analogWrite(ENB, MOTOR_SPEED);  // Set speed
+
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
+
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);
+}
+
+void WebSocketConfig::turnRight() {
+    analogWrite(ENA, MOTOR_SPEED);  // Set speed
+    analogWrite(ENB, MOTOR_SPEED);  // Set speed
+
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);
+}
+
+void WebSocketConfig::moveBackward() {
+    analogWrite(ENA, MOTOR_SPEED);  // Set speed
+    analogWrite(ENB, MOTOR_SPEED);  // Set speed
+
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);
+}
+
+void WebSocketConfig::stopMotors() {
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, LOW);
+
+    analogWrite(ENA, 0);  // Stop speed
+    analogWrite(ENB, 0);  // Stop speed
 }

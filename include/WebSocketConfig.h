@@ -8,19 +8,27 @@
 class WebSocketConfig {
     WebSocketsServer webSocket;
     static WebSocketConfig* instance;
+
     void handleCommand(const JsonDocument& doc);
     Servo* servo{};        // Add servo pointer
     void sendLedStatus();  // Add this method declaration
 
    public:
     WebSocketConfig();
+
     void begin();
     void loop();
     void sendData(const JsonDocument& doc);
     void sendEspConnectionData();
-    static void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload);
     void handleControlCommands(const JsonDocument& doc);
     void setServo(Servo* s) { servo = s; }  // Add setter
+    void moveForward();
+    void moveBackward();
+    void turnLeft();
+    void turnRight();
+    void stopMotors();
+
+    static void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length);
 };
 
 #endif

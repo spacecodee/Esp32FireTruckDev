@@ -11,10 +11,6 @@ WebSocketConfig webSocket;
 Servo myServo;
 
 void setupMotors();
-void moveForward();
-void moveBackward();
-void turnLeft();
-void turnRight();
 void stopMotors();
 void setupPump();
 void controlPump(bool state);
@@ -101,50 +97,6 @@ void setupMotors() {
 
     // Initial state - motors stopped
     stopMotors();
-}
-
-void moveForward() {
-    analogWrite(ENA, MOTOR_SPEED);  // Set speed
-    analogWrite(ENB, MOTOR_SPEED);  // Set speed
-
-    digitalWrite(IN1, LOW);
-    digitalWrite(IN2, HIGH);
-
-    digitalWrite(IN3, LOW);
-    digitalWrite(IN4, HIGH);
-}
-
-void turnLeft() {
-    analogWrite(ENA, MOTOR_SPEED);  // Set speed
-    analogWrite(ENB, MOTOR_SPEED);  // Set speed
-
-    digitalWrite(IN1, LOW);
-    digitalWrite(IN2, HIGH);
-
-    digitalWrite(IN3, HIGH);
-    digitalWrite(IN4, LOW);
-}
-
-void turnRight() {
-    analogWrite(ENA, MOTOR_SPEED);  // Set speed
-    analogWrite(ENB, MOTOR_SPEED);  // Set speed
-
-    digitalWrite(IN1, HIGH);
-    digitalWrite(IN2, LOW);
-
-    digitalWrite(IN3, LOW);
-    digitalWrite(IN4, HIGH);
-}
-
-void moveBackward() {
-    analogWrite(ENA, MOTOR_SPEED);  // Set speed
-    analogWrite(ENB, MOTOR_SPEED);  // Set speed
-
-    digitalWrite(IN1, HIGH);
-    digitalWrite(IN2, LOW);
-
-    digitalWrite(IN3, HIGH);
-    digitalWrite(IN4, LOW);
 }
 
 void stopMotors() {
