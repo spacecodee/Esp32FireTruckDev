@@ -11,15 +11,15 @@ WebSocketConfig::WebSocketConfig() : webSocket(WEBSOCKET_PORT) {
 void WebSocketConfig::begin() {
     Serial.println("Starting WebSocket server...");
 
-    // Wait for WiFi connection
+    // Wait for Wi-Fi connection
     int attempts = 0;
-    while (WiFi.status() != WL_CONNECTED && attempts < 10) {
+    while (WiFiClass::status() != WL_CONNECTED && attempts < 10) {
         Serial.print(".");
         delay(1000);
         attempts++;
     }
 
-    if (WiFi.status() != WL_CONNECTED) {
+    if (WiFiClass::status() != WL_CONNECTED) {
         Serial.println("WiFi connection failed!");
         return;
     }
@@ -51,7 +51,7 @@ void WebSocketConfig::begin() {
 }
 
 void WebSocketConfig::loop() {
-    if (WiFi.status() != WL_CONNECTED) {
+    if (WiFiClass::status() != WL_CONNECTED) {
         Serial.println("WiFi connection lost!");
         return;
     }
@@ -72,26 +72,26 @@ void WebSocketConfig::sendLedStatus() {
     sendData(response);
 }
 
-void WebSocketConfig::webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length) {
+void WebSocketConfig::webSocketEvent(const uint8_t num, const WStype_t type, uint8_t* payload, size_t length) {
     if (!instance) return;
 
-    JsonDocument doc;
-
     switch (type) {
-        case WStype_t::WStype_DISCONNECTED:
+        case WStype_DISCONNECTED:
             Serial.printf("[WS] Client #%u disconnected\n", num);
             break;
 
-        case WStype_t::WStype_CONNECTED:
+        case WStype_CONNECTED:
             Serial.printf("[WS] Client #%u connected from %s\n", num,
                           instance->webSocket.remoteIP(num).toString().c_str());
             instance->sendEspConnectionData();
             instance->sendLedStatus();  // Send initial LED states
             break;
 
-        case WStype_t::WStype_TEXT: {  // Added scope brackets
-            Serial.printf("[%u] Received text: %s\n", num, payload);
-            DeserializationError error = deserializeJson(doc, payload);
+        case WStype_TEXT: {
+            JsonDocument doc;
+            // Added scope brackets
+            Serial.printf("[%u] Received text: %p\n", num, payload);
+            const DeserializationError error = deserializeJson(doc, payload);
             if (!error) {
                 instance->handleCommand(doc);
             } else {
@@ -100,7 +100,7 @@ void WebSocketConfig::webSocketEvent(uint8_t num, WStype_t type, uint8_t* payloa
             break;
         }
 
-        case WStype_t::WStype_ERROR:
+        case WStype_ERROR:
             Serial.printf("[WS] Error from client #%u\n", num);
             break;
 
@@ -181,6 +181,6 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
 void WebSocketConfig::sendEspConnectionData() {
     JsonDocument doc;
     doc["type"] = "connection";
-    doc["connected"] = (WiFi.status() == WL_CONNECTED);
+    doc["connected"] = (WiFiClass::status() == WL_CONNECTED);
     sendData(doc);
 }

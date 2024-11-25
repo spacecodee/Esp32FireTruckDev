@@ -6,11 +6,10 @@
 #include <WebSocketsServer.h>
 
 class WebSocketConfig {
-   private:
     WebSocketsServer webSocket;
     static WebSocketConfig* instance;
     void handleCommand(const JsonDocument& doc);
-    Servo* servo;          // Add servo pointer
+    Servo* servo{};        // Add servo pointer
     void sendLedStatus();  // Add this method declaration
 
    public:

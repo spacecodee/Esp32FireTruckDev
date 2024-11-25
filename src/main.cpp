@@ -57,13 +57,13 @@ void setup() {
 void loop() {
     if (!wifi.isWifiConnected()) {
         digitalWrite(LED_PIN, LOW);
-        stopMotors();                // Safety: stop motors if WiFi disconnects
-        ledcWrite(PUMP_CHANNEL, 0);  // Safety: stop pump if WiFi disconnects
+        stopMotors();                // Safety: stop motors if Wi-Fi disconnects
+        ledcWrite(PUMP_CHANNEL, 0);  // Safety: stop pump if Wi-Fi disconnects
     } else {
         digitalWrite(LED_PIN, HIGH);
         webSocket.loop();  // Handle WebSocket events
 
-        // Only send connection data every 500ms
+        // Only send connection data every 500 ms
         static unsigned long lastUpdate = 0;
         if (millis() - lastUpdate > 500) {
             sendEspConnectionData();
@@ -80,12 +80,12 @@ void setupPump() {
 }
 
 // Add pump speed control
-void setPumpSpeed(uint8_t speed) {
+void setPumpSpeed(const uint8_t speed) {
     // speed: 0-255 (0=off, 255=full speed)
     ledcWrite(PUMP_CHANNEL, speed);
 }
 
-void controlPump(bool state) {
+void controlPump(const bool state) {
     // state: true = ON, false = OFF
     digitalWrite(PUMP_PIN, state ? HIGH : LOW);
 }
@@ -164,16 +164,16 @@ void setupFlameSensors() {
     pinMode(FLAME_SENSOR_3, INPUT);
 }
 
-int readFlameValue(int sensorPin) {
-    int rawValue = analogRead(sensorPin);
+int readFlameValue(const int sensorPin) {
+    const int rawValue = analogRead(sensorPin);
     // Map from 0-1023 to 1-100 range
     return map(rawValue, 0, ADC_RESOLUTION, MAPPED_MIN, MAPPED_MAX);
 }
 
 void readAllFlameSensors() {
-    int flame1 = readFlameValue(FLAME_SENSOR_1);
-    int flame2 = readFlameValue(FLAME_SENSOR_2);
-    int flame3 = readFlameValue(FLAME_SENSOR_3);
+    const int flame1 = readFlameValue(FLAME_SENSOR_1);
+    const int flame2 = readFlameValue(FLAME_SENSOR_2);
+    const int flame3 = readFlameValue(FLAME_SENSOR_3);
 
     Serial.printf("Flame Sensors: %d%%, %d%%, %d%%\n", flame1, flame2, flame3);
 }
