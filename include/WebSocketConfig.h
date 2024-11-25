@@ -18,7 +18,7 @@ class WebSocketConfig {
     void loop();
     void sendData(const JsonDocument& doc);
     void sendEspConnectionData();
-    static void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length);
+    static void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload);
     void handleControlCommands(const JsonDocument& doc);
     void setServo(Servo* s) { servo = s; }  // Add setter
 };

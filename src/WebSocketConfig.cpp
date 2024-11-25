@@ -72,7 +72,7 @@ void WebSocketConfig::sendLedStatus() {
     sendData(response);
 }
 
-void WebSocketConfig::webSocketEvent(const uint8_t num, const WStype_t type, uint8_t* payload, size_t length) {
+void WebSocketConfig::webSocketEvent(const uint8_t num, const WStype_t type, uint8_t* payload) {
     if (!instance) return;
 
     switch (type) {
