@@ -22,6 +22,7 @@ class WebSocketConfig {
     void sendEspConnectionData();
     void handleControlCommands(const JsonDocument& doc);
     void setServo(Servo* s) { servo = s; }  // Add setter
+    void moveAll();
     void moveForward();
     void moveBackward();
     void turnLeft();

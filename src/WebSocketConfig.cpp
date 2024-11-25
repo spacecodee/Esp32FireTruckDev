@@ -132,6 +132,8 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
             turnRight();
         } else if (strcmp(direction, "stop") == 0) {
             stopMotors();
+        } else if (strcmp(direction, "all") == 0) {
+            moveAll();
         }
 
         // Send motor status
@@ -204,6 +206,16 @@ void WebSocketConfig::sendEspConnectionData() {
     doc["type"] = "connection";
     doc["connected"] = (WiFiClass::status() == WL_CONNECTED);
     sendData(doc);
+}
+void WebSocketConfig::moveAll() {
+    analogWrite(ENA, MOTOR_SPEED);  // Set speed
+    analogWrite(ENB, MOTOR_SPEED);  // Set speed
+
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, HIGH);
+
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, HIGH);
 }
 
 void WebSocketConfig::moveForward() {
