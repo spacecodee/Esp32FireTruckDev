@@ -120,21 +120,30 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
 
     if (strcmp(command, "motor") == 0) {
         const char* direction = doc["direction"];
-        Serial.printf("Motor Command - Direction: %s\n", direction);
+        Serial.printf("Motor Command Received - Direction: %s\n", direction);
 
+        // Add debug prints for motor control
         if (strcmp(direction, "forward") == 0) {
+            Serial.println("Moving Forward");
             moveForward();
         } else if (strcmp(direction, "backward") == 0) {
+            Serial.println("Moving Backward");
             moveBackward();
         } else if (strcmp(direction, "left") == 0) {
+            Serial.println("Turning Left");
             turnLeft();
         } else if (strcmp(direction, "right") == 0) {
+            Serial.println("Turning Right");
             turnRight();
         } else if (strcmp(direction, "stop") == 0) {
+            Serial.println("Stopping Motors");
             stopMotors();
         }
 
-        // Send motor status
+        // Verify motor states after command
+        Serial.printf("Motor Pins - IN1:%d IN2:%d IN3:%d IN4:%d ENA:%d ENB:%d\n", digitalRead(IN1), digitalRead(IN2),
+                      digitalRead(IN3), digitalRead(IN4), analogRead(ENA), analogRead(ENB));
+
         JsonDocument response;
         response["type"] = "motor_status";
         response["direction"] = direction;

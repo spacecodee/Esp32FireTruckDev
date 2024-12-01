@@ -12,10 +12,6 @@ Servo myServo;
 
 void setupMotors();
 void stopMotors();
-void moveForward();
-void turnLeft();
-void turnRight();
-void moveBackward();
 void moveServo();
 
 void setupPump();

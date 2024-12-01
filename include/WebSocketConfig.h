@@ -7,7 +7,6 @@
 
 class WebSocketConfig {
     WebSocketsServer webSocket;
-    static WebSocketConfig* instance;
 
     void handleCommand(const JsonDocument& doc);
     Servo* servo{};        // Add servo pointer
@@ -28,6 +27,7 @@ class WebSocketConfig {
     void turnRight();
     void stopMotors();
 
+    static WebSocketConfig* instance;
     static void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length);
 };
 
