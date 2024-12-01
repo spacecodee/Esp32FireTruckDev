@@ -12,9 +12,13 @@ Servo myServo;
 
 void setupMotors();
 void stopMotors();
+void moveForward();
+void turnLeft();
+void turnRight();
+void moveBackward();
+void moveServo();
+
 void setupPump();
-void controlPump(bool state);
-void setPumpSpeed(uint8_t speed);
 void setupFlameSensors();
 int readFlameValue(int sensorPin);
 void readAllFlameSensors();
@@ -40,6 +44,7 @@ void setup() {
 
     // Pump Setup
     setupPump();
+    setupMotors();
 
     if (wifi.begin()) {
         digitalWrite(LED_PIN, HIGH);
@@ -68,22 +73,23 @@ void loop() {
     }
 }
 
+void moveServo() {
+    for (int pos = 0; pos <= 180; pos += 1) {
+        myServo.write(pos);
+        delay(15);
+    }
+
+    for (int pos = 180; pos >= 0; pos -= 1) {
+        myServo.write(pos);
+        delay(15);
+    }
+}
+
 void setupPump() {
     ledcSetup(PUMP_CHANNEL, PUMP_FREQUENCY, PUMP_RESOLUTION);
     ledcAttachPin(PUMP_PIN, PUMP_CHANNEL);
     ledcWrite(PUMP_CHANNEL, 0);  // Start with pump off
     Serial.println("Pump initialized");
-}
-
-// Add pump speed control
-void setPumpSpeed(const uint8_t speed) {
-    // speed: 0-255 (0=off, 255=full speed)
-    ledcWrite(PUMP_CHANNEL, speed);
-}
-
-void controlPump(const bool state) {
-    // state: true = ON, false = OFF
-    digitalWrite(PUMP_PIN, state ? HIGH : LOW);
 }
 
 void setupMotors() {
