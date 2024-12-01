@@ -22,7 +22,7 @@
 #define IN2 14  // Digital control
 #define IN3 12  // Digital control
 #define IN4 15  // Digital control
-#define MOTOR_SPEED 200
+#define MOTOR_SPEED 255
 
 // PWM Channels
 #define MOTOR_A_CHANNEL 1  // Add PWM channel for ENA

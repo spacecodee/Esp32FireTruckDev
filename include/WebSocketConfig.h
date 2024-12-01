@@ -22,11 +22,11 @@ class WebSocketConfig {
     void sendEspConnectionData();
     void handleControlCommands(const JsonDocument& doc);
     void setServo(Servo* s) { servo = s; }  // Add setter
-    void moveForward();
-    void moveBackward();
-    void turnLeft();
-    void turnRight();
-    void stopMotors();
+    static void moveForward();
+    static void moveBackward();
+    static void turnForwardLeft();
+    static void turnForwardRight();
+    static void stopMotors();
 
     static WebSocketConfig* instance;
     static void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length);

@@ -131,10 +131,10 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
             moveBackward();
         } else if (strcmp(direction, "left") == 0) {
             Serial.println("Turning Left");
-            turnLeft();
+            turnForwardLeft();
         } else if (strcmp(direction, "right") == 0) {
             Serial.println("Turning Right");
-            turnRight();
+            turnForwardRight();
         } else if (strcmp(direction, "stop") == 0) {
             Serial.println("Stopping Motors");
             stopMotors();
@@ -242,7 +242,7 @@ void WebSocketConfig::moveBackward() {
     digitalWrite(IN4, HIGH);
 }
 
-void WebSocketConfig::turnLeft() {
+void WebSocketConfig::turnForwardLeft() {
     ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);
     ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);
 
@@ -258,7 +258,7 @@ void WebSocketConfig::turnLeft() {
     digitalWrite(IN4, LOW);
 }
 
-void WebSocketConfig::turnRight() {
+void WebSocketConfig::turnForwardRight() {
     ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);
     ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);
 
