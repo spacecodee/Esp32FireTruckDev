@@ -1,4 +1,4 @@
-# Side One
+# Left Side
 
 | No. | Name | Type | Function                                |
 |-----|------|------|-----------------------------------------|
@@ -21,3 +21,27 @@
 | 17  | IO10 | I/O  | GPIO10, D3                              |
 | 18  | IO11 | I/O  | GPIO11, CMD                             |
 | 19  | 5V0  | P    | 5 V power supply                        |
+
+# Right Side
+
+| No. | Name | Type | Function                          |
+|-----|------|------|-----------------------------------|
+| 1   | GND  | G    | Ground                            |
+| 2   | I023 | I/0  | GPIO23                            |
+| 3   | I022 | I/0  | GPIO22                            |
+| 4   | I01  | I/0  | GPIO1, UOTXD                      |
+| 5   | I03  | I/0  | GPIO3, UORXD                      |
+| 6   | I021 | I/0  | GPIO21                            |
+| 7   | GND  | G    | Ground                            |
+| 8   | I019 | I/0  | GPIO19                            |
+| 9   | I018 | I/0  | GPIO18                            |
+| 10  | I05  | I/0  | GPIO5                             |
+| 11  | I017 | I/0  | GPIO17                            |
+| 12  | I016 | I/0  | GPIO16                            |
+| 13  | I04  | I/0  | GPIO4, ADC2_CHO, TOUCH_CHO        |
+| 14  | I00  | I/0  | GPIO0, ADC2_CH1, TOUCH_CH1, Boot  |
+| 16  | I02  | I/0  | GPIO2, ADC2_CH2, TOUCH_CH2        |
+| 17  | I015 | I/0  | GPIO15, ADC2_CH3, TOUCH_CH3, MTDO |
+| 17  | I08  | I/0  | GPIO8, D1                         |
+| 18  | I07  | I/0  | GPIO7, DO                         |
+| 19  | I06  | I/0  | GPIO6, SCK                        |
