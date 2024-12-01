@@ -17,6 +17,7 @@ class WebSocketConfig {
 
     void begin();
     void loop();
+    void moveServo();
     void sendData(const JsonDocument& doc);
     void sendEspConnectionData();
     void handleControlCommands(const JsonDocument& doc);

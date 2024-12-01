@@ -167,26 +167,6 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
         sendData(response);
     } else if (strcmp(command, "servo") == 0 && servo != nullptr) {
         Serial.println("Received servo sweep command");
-
-        for (int pos = 0; pos <= 180; pos += 1) {
-            servo->write(pos);
-            delay(15);
-
-            JsonDocument response;
-            response["type"] = "servo_status";
-            response["position"] = pos;
-            sendData(response);
-        }
-
-        for (int pos = 180; pos >= 0; pos -= 1) {
-            servo->write(pos);
-            delay(15);
-
-            JsonDocument response;
-            response["type"] = "servo_status";
-            response["position"] = pos;
-            sendData(response);
-        }
     } else if (strcmp(command, "pump") == 0) {
         bool state = doc["state"];
         Serial.printf("Pump Command - State: %d\n", state);
@@ -202,6 +182,28 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
         response["type"] = "pump_status";
         response["state"] = state;
         response["speed"] = state ? 255 : 0;
+        sendData(response);
+    }
+}
+
+void WebSocketConfig::moveServo() {
+    for (int pos = 0; pos <= 180; pos += 1) {
+        servo->write(pos);
+        delay(15);
+
+        JsonDocument response;
+        response["type"] = "servo_status";
+        response["position"] = pos;
+        sendData(response);
+    }
+
+    for (int pos = 180; pos >= 0; pos -= 1) {
+        servo->write(pos);
+        delay(15);
+
+        JsonDocument response;
+        response["type"] = "servo_status";
+        response["position"] = pos;
         sendData(response);
     }
 }
@@ -225,8 +227,6 @@ void WebSocketConfig::moveForward() {
     // Right Motors
     digitalWrite(IN3, HIGH);
     digitalWrite(IN4, LOW);
-
-    debugMotorStatus("Forward");
 }
 
 void WebSocketConfig::moveBackward() {
@@ -240,8 +240,6 @@ void WebSocketConfig::moveBackward() {
     // Right Motors
     digitalWrite(IN3, LOW);
     digitalWrite(IN4, HIGH);
-
-    debugMotorStatus("Backward");
 }
 
 void WebSocketConfig::turnLeft() {
@@ -258,8 +256,6 @@ void WebSocketConfig::turnLeft() {
     // Right Motors
     digitalWrite(IN3, HIGH);
     digitalWrite(IN4, LOW);
-
-    debugMotorStatus("Left Turn");
 }
 
 void WebSocketConfig::turnRight() {
@@ -273,8 +269,6 @@ void WebSocketConfig::turnRight() {
     // Right Motors
     digitalWrite(IN3, LOW);
     digitalWrite(IN4, LOW);
-
-    debugMotorStatus("Right Turn");
 }
 
 void WebSocketConfig::stopMotors() {

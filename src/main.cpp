@@ -8,6 +8,7 @@
 
 WifiConfig wifi;
 WebSocketConfig webSocket;
+
 Servo myServo;
 
 void setupMotors();
@@ -26,6 +27,9 @@ void setup() {
     Serial.println("\n\n=== ESP32 Starting ===");
 
     ESP32PWM::allocateTimer(0);
+    ESP32PWM::allocateTimer(1);
+    ESP32PWM::allocateTimer(2);
+    ESP32PWM::allocateTimer(3);
     myServo.setPeriodHertz(50);  // standard 50 hz servo
     myServo.attach(MY_SERVO_PIN, 1000, 2000);
     myServo.write(0);
@@ -66,18 +70,6 @@ void loop() {
             sendEspConnectionData();
             lastUpdate = millis();
         }
-    }
-}
-
-void moveServo() {
-    for (int pos = 0; pos <= 180; pos += 1) {
-        myServo.write(pos);
-        delay(15);
-    }
-
-    for (int pos = 180; pos >= 0; pos -= 1) {
-        myServo.write(pos);
-        delay(15);
     }
 }
 
