@@ -140,13 +140,17 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
             stopMotors();
         }
 
-        // Verify motor states after command
-        Serial.printf("Motor Pins - IN1:%d IN2:%d IN3:%d IN4:%d ENA:%d ENB:%d\n", digitalRead(IN1), digitalRead(IN2),
-                      digitalRead(IN3), digitalRead(IN4), analogRead(ENA), analogRead(ENB));
+        // Update motor status without using analogRead
+        Serial.printf("Motor Pins - IN1:%d IN2:%d IN3:%d IN4:%d Speed A:%d Speed B:%d\n", digitalRead(IN1),
+                      digitalRead(IN2), digitalRead(IN3), digitalRead(IN4),
+                      ledcRead(MOTOR_A_CHANNEL),  // Read PWM duty
+                      ledcRead(MOTOR_B_CHANNEL));
 
         JsonDocument response;
         response["type"] = "motor_status";
         response["direction"] = direction;
+        response["speed_a"] = ledcRead(MOTOR_A_CHANNEL);
+        response["speed_b"] = ledcRead(MOTOR_B_CHANNEL);
         sendData(response);
     } else if (strcmp(command, "led") == 0) {
         const char* led = doc["led"];
