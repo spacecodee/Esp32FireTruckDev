@@ -286,12 +286,3 @@ void WebSocketConfig::stopMotors() {
     ledcWrite(MOTOR_A_CHANNEL, 0);  // Stop using PWM channel
     ledcWrite(MOTOR_B_CHANNEL, 0);
 }
-
-// Add debug helper function
-void WebSocketConfig::debugMotorStatus(const char* movement) {
-    Serial.printf("\n%s Movement:\n", movement);
-    Serial.printf("Left Motor (A): IN1:%d IN2:%d Speed:%d\n", digitalRead(IN1), digitalRead(IN2),
-                  ledcRead(MOTOR_A_CHANNEL));
-    Serial.printf("Right Motor (B): IN3:%d IN4:%d Speed:%d\n", digitalRead(IN3), digitalRead(IN4),
-                  ledcRead(MOTOR_B_CHANNEL));
-}

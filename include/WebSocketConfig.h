@@ -11,7 +11,6 @@ class WebSocketConfig {
     void handleCommand(const JsonDocument& doc);
     Servo* servo{};        // Add servo pointer
     void sendLedStatus();  // Add this method declaration
-    void debugMotorStatus(const char* movement);
 
    public:
     WebSocketConfig();
