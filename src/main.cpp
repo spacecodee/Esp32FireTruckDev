@@ -89,15 +89,18 @@ void setupPump() {
 }
 
 void setupMotors() {
-    // Configure motor control pins
-    pinMode(ENA, OUTPUT);
+    // Configure PWM for motors
+    ledcSetup(MOTOR_A_CHANNEL, MOTOR_FREQUENCY, MOTOR_RESOLUTION);
+    ledcSetup(MOTOR_B_CHANNEL, MOTOR_FREQUENCY, MOTOR_RESOLUTION);
+    ledcAttachPin(ENA, MOTOR_A_CHANNEL);
+    ledcAttachPin(ENB, MOTOR_B_CHANNEL);
+
+    // Configure direction control pins
     pinMode(IN1, OUTPUT);
     pinMode(IN2, OUTPUT);
     pinMode(IN3, OUTPUT);
     pinMode(IN4, OUTPUT);
-    pinMode(ENB, OUTPUT);
 
-    // Initial state - motors stopped
     stopMotors();
 }
 
@@ -107,8 +110,8 @@ void stopMotors() {
     digitalWrite(IN3, LOW);
     digitalWrite(IN4, LOW);
 
-    analogWrite(ENA, 0);  // Stop speed
-    analogWrite(ENB, 0);  // Stop speed
+    ledcWrite(MOTOR_A_CHANNEL, 0);  // Stop using PWM channel
+    ledcWrite(MOTOR_B_CHANNEL, 0);
 }
 
 void setupFlameSensors() {

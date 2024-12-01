@@ -216,19 +216,18 @@ void WebSocketConfig::sendEspConnectionData() {
 }
 
 void WebSocketConfig::moveForward() {
-    analogWrite(ENA, MOTOR_SPEED);  // Set speed
-    analogWrite(ENB, MOTOR_SPEED);  // Set speed
+    ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);  // Use PWM channel for ENA
+    ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);  // Use PWM channel for ENB
 
     digitalWrite(IN1, LOW);
     digitalWrite(IN2, HIGH);
-
     digitalWrite(IN3, LOW);
     digitalWrite(IN4, HIGH);
 }
 
 void WebSocketConfig::turnLeft() {
-    analogWrite(ENA, MOTOR_SPEED);  // Set speed
-    analogWrite(ENB, MOTOR_SPEED);  // Set speed
+    ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);  // Set speed
+    ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);  // Set speed
 
     digitalWrite(IN1, LOW);
     digitalWrite(IN2, HIGH);
@@ -238,8 +237,8 @@ void WebSocketConfig::turnLeft() {
 }
 
 void WebSocketConfig::turnRight() {
-    analogWrite(ENA, MOTOR_SPEED);  // Set speed
-    analogWrite(ENB, MOTOR_SPEED);  // Set speed
+    ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);  // Set speed
+    ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);  // Set speed
 
     digitalWrite(IN1, HIGH);
     digitalWrite(IN2, LOW);
@@ -249,12 +248,11 @@ void WebSocketConfig::turnRight() {
 }
 
 void WebSocketConfig::moveBackward() {
-    analogWrite(ENA, MOTOR_SPEED);  // Set speed
-    analogWrite(ENB, MOTOR_SPEED);  // Set speed
+    ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);
+    ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);
 
     digitalWrite(IN1, HIGH);
     digitalWrite(IN2, LOW);
-
     digitalWrite(IN3, HIGH);
     digitalWrite(IN4, LOW);
 }
@@ -265,6 +263,6 @@ void WebSocketConfig::stopMotors() {
     digitalWrite(IN3, LOW);
     digitalWrite(IN4, LOW);
 
-    analogWrite(ENA, 0);  // Stop speed
-    analogWrite(ENB, 0);  // Stop speed
+    ledcWrite(MOTOR_A_CHANNEL, 0);  // Stop using PWM channel
+    ledcWrite(MOTOR_B_CHANNEL, 0);
 }
