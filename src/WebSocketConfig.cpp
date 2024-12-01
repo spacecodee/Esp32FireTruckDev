@@ -140,12 +140,6 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
             stopMotors();
         }
 
-        // Update motor status without using analogRead
-        Serial.printf("Motor Pins - IN1:%d IN2:%d IN3:%d IN4:%d Speed A:%d Speed B:%d\n", digitalRead(IN1),
-                      digitalRead(IN2), digitalRead(IN3), digitalRead(IN4),
-                      ledcRead(MOTOR_A_CHANNEL),  // Read PWM duty
-                      ledcRead(MOTOR_B_CHANNEL));
-
         JsonDocument response;
         response["type"] = "motor_status";
         response["direction"] = direction;
@@ -220,45 +214,63 @@ void WebSocketConfig::sendEspConnectionData() {
 }
 
 void WebSocketConfig::moveForward() {
-    ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);  // Use PWM channel for ENA
-    ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);  // Use PWM channel for ENB
+    // Set speeds
+    ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);
+    ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);
 
-    digitalWrite(IN1, LOW);
-    digitalWrite(IN2, HIGH);
-    digitalWrite(IN3, LOW);
-    digitalWrite(IN4, HIGH);
+    // Left Motors (OUT1/OUT2)
+    digitalWrite(IN1, HIGH);  // OUT1 positive
+    digitalWrite(IN2, LOW);   // OUT2 ground
+
+    // Right Motors (OUT3/OUT4)
+    digitalWrite(IN3, HIGH);  // OUT3 positive
+    digitalWrite(IN4, LOW);   // OUT4 ground
+
+    debugMotorStatus("Forward");
 }
-
-void WebSocketConfig::turnLeft() {
-    ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);  // Set speed
-    ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);  // Set speed
-
-    digitalWrite(IN1, LOW);
-    digitalWrite(IN2, HIGH);
-
-    digitalWrite(IN3, HIGH);
-    digitalWrite(IN4, LOW);
-}
-
-void WebSocketConfig::turnRight() {
-    ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);  // Set speed
-    ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);  // Set speed
-
-    digitalWrite(IN1, HIGH);
-    digitalWrite(IN2, LOW);
-
-    digitalWrite(IN3, LOW);
-    digitalWrite(IN4, HIGH);
-}
-
 void WebSocketConfig::moveBackward() {
     ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);
     ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);
 
-    digitalWrite(IN1, HIGH);
-    digitalWrite(IN2, LOW);
-    digitalWrite(IN3, HIGH);
-    digitalWrite(IN4, LOW);
+    // Left Motors - Reverse polarity
+    digitalWrite(IN1, LOW);   // OUT1 ground
+    digitalWrite(IN2, HIGH);  // OUT2 positive
+
+    // Right Motors - Reverse polarity
+    digitalWrite(IN3, LOW);   // OUT3 ground
+    digitalWrite(IN4, HIGH);  // OUT4 positive
+
+    debugMotorStatus("Backward");
+}
+
+void WebSocketConfig::turnLeft() {
+    ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);
+    ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);
+
+    // Left Motors - Backward
+    digitalWrite(IN1, LOW);   // OUT1 ground
+    digitalWrite(IN2, HIGH);  // OUT2 positive
+
+    // Right Motors - Forward
+    digitalWrite(IN3, HIGH);  // OUT3 positive
+    digitalWrite(IN4, LOW);   // OUT4 ground
+
+    debugMotorStatus("Left Turn");
+}
+
+void WebSocketConfig::turnRight() {
+    ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);
+    ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);
+
+    // Left Motors - Forward
+    digitalWrite(IN1, HIGH);  // OUT1 positive
+    digitalWrite(IN2, LOW);   // OUT2 ground
+
+    // Right Motors - Backward
+    digitalWrite(IN3, LOW);   // OUT3 ground
+    digitalWrite(IN4, HIGH);  // OUT4 positive
+
+    debugMotorStatus("Right Turn");
 }
 
 void WebSocketConfig::stopMotors() {
@@ -269,4 +281,13 @@ void WebSocketConfig::stopMotors() {
 
     ledcWrite(MOTOR_A_CHANNEL, 0);  // Stop using PWM channel
     ledcWrite(MOTOR_B_CHANNEL, 0);
+}
+
+// Add debug helper function
+void WebSocketConfig::debugMotorStatus(const char* movement) {
+    Serial.printf("\n%s Movement:\n", movement);
+    Serial.printf("Left Motor (A): IN1:%d IN2:%d Speed:%d\n", digitalRead(IN1), digitalRead(IN2),
+                  ledcRead(MOTOR_A_CHANNEL));
+    Serial.printf("Right Motor (B): IN3:%d IN4:%d Speed:%d\n", digitalRead(IN3), digitalRead(IN4),
+                  ledcRead(MOTOR_B_CHANNEL));
 }
