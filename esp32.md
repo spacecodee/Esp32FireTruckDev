@@ -40,8 +40,8 @@
 | 12  | I016 | I/0  | GPIO16                            |
 | 13  | I04  | I/0  | GPIO4, ADC2_CHO, TOUCH_CHO        |
 | 14  | I00  | I/0  | GPIO0, ADC2_CH1, TOUCH_CH1, Boot  |
-| 16  | I02  | I/0  | GPIO2, ADC2_CH2, TOUCH_CH2        |
-| 17  | I015 | I/0  | GPIO15, ADC2_CH3, TOUCH_CH3, MTDO |
+| 15  | I02  | I/0  | GPIO2, ADC2_CH2, TOUCH_CH2        |
+| 16  | I015 | I/0  | GPIO15, ADC2_CH3, TOUCH_CH3, MTDO |
 | 17  | I08  | I/0  | GPIO8, D1                         |
 | 18  | I07  | I/0  | GPIO7, DO                         |
 | 19  | I06  | I/0  | GPIO6, SCK                        |

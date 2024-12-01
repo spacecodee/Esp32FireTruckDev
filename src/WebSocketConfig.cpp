@@ -218,27 +218,28 @@ void WebSocketConfig::moveForward() {
     ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);
     ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);
 
-    // Left Motors (OUT1/OUT2)
-    digitalWrite(IN1, HIGH);  // OUT1 positive
-    digitalWrite(IN2, LOW);   // OUT2 ground
+    // Left Motors
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
 
-    // Right Motors (OUT3/OUT4)
-    digitalWrite(IN3, HIGH);  // OUT3 positive
-    digitalWrite(IN4, LOW);   // OUT4 ground
+    // Right Motors
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);
 
     debugMotorStatus("Forward");
 }
+
 void WebSocketConfig::moveBackward() {
     ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);
     ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);
 
-    // Left Motors - Reverse polarity
-    digitalWrite(IN1, LOW);   // OUT1 ground
-    digitalWrite(IN2, HIGH);  // OUT2 positive
+    // Left Motors
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
 
-    // Right Motors - Reverse polarity
-    digitalWrite(IN3, LOW);   // OUT3 ground
-    digitalWrite(IN4, HIGH);  // OUT4 positive
+    // Right Motors
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);
 
     debugMotorStatus("Backward");
 }
@@ -247,13 +248,16 @@ void WebSocketConfig::turnLeft() {
     ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);
     ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);
 
-    // Left Motors - Backward
-    digitalWrite(IN1, LOW);   // OUT1 ground
-    digitalWrite(IN2, HIGH);  // OUT2 positive
+    // High, Low, Low, High
+    // Low, High, High, Low
 
-    // Right Motors - Forward
-    digitalWrite(IN3, HIGH);  // OUT3 positive
-    digitalWrite(IN4, LOW);   // OUT4 ground
+    // Left Motors
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
+
+    // Right Motors
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);
 
     debugMotorStatus("Left Turn");
 }
@@ -262,13 +266,13 @@ void WebSocketConfig::turnRight() {
     ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);
     ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);
 
-    // Left Motors - Forward
-    digitalWrite(IN1, HIGH);  // OUT1 positive
-    digitalWrite(IN2, LOW);   // OUT2 ground
+    // Left Motors
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
 
-    // Right Motors - Backward
-    digitalWrite(IN3, LOW);   // OUT3 ground
-    digitalWrite(IN4, HIGH);  // OUT4 positive
+    // Right Motors
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, LOW);
 
     debugMotorStatus("Right Turn");
 }
