@@ -122,21 +122,19 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
         const char* direction = doc["direction"];
         Serial.printf("Motor Command Received - Direction: %s\n", direction);
 
-        // Add debug prints for motor control
         if (strcmp(direction, "forward") == 0) {
-            Serial.println("Moving Forward");
             moveForward();
         } else if (strcmp(direction, "backward") == 0) {
-            Serial.println("Moving Backward");
             moveBackward();
-        } else if (strcmp(direction, "left") == 0) {
-            Serial.println("Turning Left");
+        } else if (strcmp(direction, "backward_left") == 0) {
             turnForwardLeft();
-        } else if (strcmp(direction, "right") == 0) {
-            Serial.println("Turning Right");
+        } else if (strcmp(direction, "backward_right") == 0) {
             turnForwardRight();
+        } else if (strcmp(direction, "backward_left") == 0) {
+            turnBackwardLeft();
+        } else if (strcmp(direction, "backward_right") == 0) {
+            turnBackwardRight();
         } else if (strcmp(direction, "stop") == 0) {
-            Serial.println("Stopping Motors");
             stopMotors();
         }
 
@@ -267,6 +265,32 @@ void WebSocketConfig::turnForwardRight() {
     digitalWrite(IN2, HIGH);
 
     // Right Motors
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, LOW);
+}
+
+void WebSocketConfig::turnBackwardLeft() {
+    ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);
+    ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);
+
+    // Left Motors - Stop
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
+
+    // Right Motors - Backward
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);
+}
+
+void WebSocketConfig::turnBackwardRight() {
+    ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);
+    ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);
+
+    // Left Motors - Backward
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+
+    // Right Motors - Stop
     digitalWrite(IN3, LOW);
     digitalWrite(IN4, LOW);
 }
