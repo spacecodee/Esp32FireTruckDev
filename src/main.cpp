@@ -13,13 +13,11 @@ Servo myServo;
 
 void setupMotors();
 void stopMotors();
-void moveServo();
 
 void setupPump();
 void setupFlameSensors();
 int readFlameValue(int sensorPin);
 void readAllFlameSensors();
-void sendEspConnectionData();
 
 void setup() {
     Serial.begin(115200);
@@ -67,7 +65,7 @@ void loop() {
         // Only send connection data every 500 ms
         static unsigned long lastUpdate = 0;
         if (millis() - lastUpdate > 500) {
-            sendEspConnectionData();
+            webSocket.sendEspConnectionData();
             lastUpdate = millis();
         }
     }
@@ -125,13 +123,4 @@ void readAllFlameSensors() {
     const int flame3 = readFlameValue(FLAME_SENSOR_3);
 
     Serial.printf("Flame Sensors: %d%%, %d%%, %d%%\n", flame1, flame2, flame3);
-}
-
-// Function to send sensor data
-void sendEspConnectionData() {
-    JsonDocument doc;
-    doc["type"] = "connection";
-    doc["connected"] = wifi.isWifiConnected();
-
-    webSocket.sendData(doc);
 }
