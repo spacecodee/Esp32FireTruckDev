@@ -13,24 +13,14 @@ Servo myServo;
 
 void setupMotors();
 void stopMotors();
-
+void setupServo();
 void setupPump();
 void setupFlameSensors();
-int readFlameValue(int sensorPin);
-void readAllFlameSensors();
 
 void setup() {
     Serial.begin(115200);
     delay(2000);
     Serial.println("\n\n=== ESP32 Starting ===");
-
-    ESP32PWM::allocateTimer(0);
-    ESP32PWM::allocateTimer(1);
-    ESP32PWM::allocateTimer(2);
-    ESP32PWM::allocateTimer(3);
-    myServo.setPeriodHertz(50);  // standard 50 hz servo
-    myServo.attach(MY_SERVO_PIN, 1000, 2000);
-    myServo.write(0);
 
     pinMode(LED_PIN, OUTPUT);
     pinMode(LED_RED, OUTPUT);
@@ -66,9 +56,20 @@ void loop() {
         static unsigned long lastUpdate = 0;
         if (millis() - lastUpdate > 500) {
             webSocket.sendEspConnectionData();
+            webSocket.sendFlameSensorData();
             lastUpdate = millis();
         }
     }
+}
+
+void setupServo() {
+    ESP32PWM::allocateTimer(0);
+    ESP32PWM::allocateTimer(1);
+    ESP32PWM::allocateTimer(2);
+    ESP32PWM::allocateTimer(3);
+    myServo.setPeriodHertz(50);  // standard 50 hz servo
+    myServo.attach(MY_SERVO_PIN, 1000, 2000);
+    myServo.write(0);
 }
 
 void setupPump() {
@@ -109,18 +110,4 @@ void setupFlameSensors() {
     pinMode(FLAME_SENSOR_1, INPUT);
     pinMode(FLAME_SENSOR_2, INPUT);
     pinMode(FLAME_SENSOR_3, INPUT);
-}
-
-int readFlameValue(const int sensorPin) {
-    const int rawValue = analogRead(sensorPin);
-    // Map from 0-1023 to 1-100 range
-    return map(rawValue, 0, ADC_RESOLUTION, MAPPED_MIN, MAPPED_MAX);
-}
-
-void readAllFlameSensors() {
-    const int flame1 = readFlameValue(FLAME_SENSOR_1);
-    const int flame2 = readFlameValue(FLAME_SENSOR_2);
-    const int flame3 = readFlameValue(FLAME_SENSOR_3);
-
-    Serial.printf("Flame Sensors: %d%%, %d%%, %d%%\n", flame1, flame2, flame3);
 }

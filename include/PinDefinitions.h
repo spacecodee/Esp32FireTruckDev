@@ -37,7 +37,7 @@
 
 // ADC configuration
 #define ADC_RESOLUTION 4095  // Updated for ESP32 12-bit ADC
-#define MAPPED_MIN 1
+#define MAPPED_MIN 0
 #define MAPPED_MAX 100
 
 // WebSocket

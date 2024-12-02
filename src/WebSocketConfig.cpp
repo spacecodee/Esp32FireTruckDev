@@ -213,6 +213,21 @@ void WebSocketConfig::sendEspConnectionData() {
     sendData(doc);
 }
 
+int WebSocketConfig::readFlameValue(const int sensorPin) {
+    const int rawValue = analogRead(sensorPin);
+    // Map from 0-4095 to 1-100 range (using ESP32's 12-bit ADC)
+    return map(rawValue, 0, ADC_RESOLUTION, MAPPED_MIN, MAPPED_MAX);
+}
+
+void WebSocketConfig::sendFlameSensorData() {
+    JsonDocument doc;
+    doc["type"] = "flame_sensors";
+    doc["sensor1"] = readFlameValue(FLAME_SENSOR_1);
+    doc["sensor2"] = readFlameValue(FLAME_SENSOR_2);
+    doc["sensor3"] = readFlameValue(FLAME_SENSOR_3);
+    sendData(doc);
+}
+
 void WebSocketConfig::moveForward() {
     // Set speeds
     ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);

@@ -7,7 +7,7 @@
 
 class WebSocketConfig {
     WebSocketsServer webSocket;
-
+    static int readFlameValue(int sensorPin);
     void handleCommand(const JsonDocument& doc);
     Servo* servo{};        // Add servo pointer
     void sendLedStatus();  // Add this method declaration
@@ -22,6 +22,7 @@ class WebSocketConfig {
     void sendEspConnectionData();
     void handleControlCommands(const JsonDocument& doc);
     void setServo(Servo* s) { servo = s; }  // Add setter
+    void sendFlameSensorData();
 
     static void moveForward();
     static void moveBackward();
