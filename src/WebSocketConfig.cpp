@@ -126,9 +126,9 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
             moveForward();
         } else if (strcmp(direction, "backward") == 0) {
             moveBackward();
-        } else if (strcmp(direction, "backward_left") == 0) {
+        } else if (strcmp(direction, "forward_left") == 0) {
             turnForwardLeft();
-        } else if (strcmp(direction, "backward_right") == 0) {
+        } else if (strcmp(direction, "forward_right") == 0) {
             turnForwardRight();
         } else if (strcmp(direction, "backward_left") == 0) {
             turnBackwardLeft();
@@ -243,9 +243,6 @@ void WebSocketConfig::moveBackward() {
 void WebSocketConfig::turnForwardLeft() {
     ledcWrite(MOTOR_A_CHANNEL, MOTOR_SPEED);
     ledcWrite(MOTOR_B_CHANNEL, MOTOR_SPEED);
-
-    // High, Low, Low, High
-    // Low, High, High, Low
 
     // Left Motors
     digitalWrite(IN1, LOW);
