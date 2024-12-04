@@ -16,7 +16,7 @@
 #define PUMP_RESOLUTION 8
 
 // L298N Motor Driver pins and configuration
-#define ENA 5   // PWM capable
+#define ENA 16   // PWM capable
 #define ENB 17  // PWM capable
 #define IN1 27  // Digital control
 #define IN2 14  // Digital control
