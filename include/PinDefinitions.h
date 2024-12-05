@@ -2,12 +2,12 @@
 #define PIN_DEFINITIONS_H
 
 // Servo configuration
-#define MY_SERVO_PIN 13  // Good - I/O capable, ADC2_CH4
+#define MY_SERVO_PIN 13
 
 // LED Pins
-#define LED_RED 18    // Good - I/O capable
-#define LED_GREEN 19  // Good - I/O capable
-#define LED_PIN 2     // Good - Built-in LED
+#define LED_RED 18
+#define LED_GREEN 19
+#define LED_PIN 2
 
 // Pump configuration
 #define PUMP_PIN 22  // Good - I/O capable
@@ -16,12 +16,12 @@
 #define PUMP_RESOLUTION 8
 
 // L298N Motor Driver pins and configuration
-#define ENA 16   // PWM capable
-#define ENB 17  // PWM capable
-#define IN1 27  // Digital control
-#define IN2 14  // Digital control
-#define IN3 12  // Digital control
-#define IN4 15  // Digital control
+#define ENA 16  // Purple - Purple
+#define ENB 17  // Brown - Green
+#define IN1 27  // Grey - Grey
+#define IN2 14  // Blue - Blue
+#define IN3 12  // Green - Yellow
+#define IN4 15  // Yellow - Blue
 #define MOTOR_SPEED 255
 
 // PWM Channels
@@ -31,12 +31,12 @@
 #define MOTOR_RESOLUTION 8
 
 // Flame sensors (ADC1 pins - Input only)
-#define FLAME_SENSOR_1 34  // Good - Input only ADC1_CH6
-#define FLAME_SENSOR_2 35  // Good - Input only ADC1_CH7
-#define FLAME_SENSOR_3 32  // Good - I/O capable ADC1_CH4
+#define FLAME_SENSOR_1 34
+#define FLAME_SENSOR_2 35
+#define FLAME_SENSOR_3 32
 
 // ADC configuration
-#define ADC_RESOLUTION 4095  // Updated for ESP32 12-bit ADC
+#define ADC_RESOLUTION 4095
 #define MAPPED_MIN 0
 #define MAPPED_MAX 100
 
