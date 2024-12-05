@@ -4,16 +4,20 @@
 #include <ArduinoJson.h>
 #include <ESP32Servo.h>
 #include <WebSocketsServer.h>
+#include <WifiConfig.h>
 
 class WebSocketConfig {
     WebSocketsServer webSocket;
+    static WebSocketConfig* instance;
+    WifiConfig& wifi;  // Add reference
+
     static int readFlameValue(int sensorPin);
     void handleCommand(const JsonDocument& doc);
     Servo* servo{};        // Add servo pointer
     void sendLedStatus();  // Add this method declaration
 
    public:
-    WebSocketConfig();
+    explicit WebSocketConfig(WifiConfig& wifiConfig);
 
     void begin();
     void loop();
@@ -31,7 +35,6 @@ class WebSocketConfig {
     static void turnBackwardLeft();
     static void turnBackwardRight();
     static void stopMotors();
-    static WebSocketConfig* instance;
     static void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length);
 };
 

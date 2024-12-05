@@ -3,10 +3,11 @@
 
 #include "PinDefinitions.h"
 #include "WebSocketConfig.h"
-#include "WifiConfig.h"
+
+class WifiConfig;
 
 WifiConfig wifi;
-WebSocketConfig webSocket;
+WebSocketConfig webSocket(wifi);  // Pass wifi reference
 
 Servo myServo;
 

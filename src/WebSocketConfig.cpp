@@ -6,8 +6,8 @@
 
 WebSocketConfig* WebSocketConfig::instance = nullptr;
 
-WebSocketConfig::WebSocketConfig() : webSocket(WEBSOCKET_PORT) {
-    instance = this;  // Store instance pointer
+WebSocketConfig::WebSocketConfig(WifiConfig& wifiConfig) : webSocket(WEBSOCKET_PORT), wifi(wifiConfig) {
+    instance = this;
 }
 
 void WebSocketConfig::begin() {
@@ -160,6 +160,7 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
         delay(1000);  // Give time for the response to be sent
 
         // Reset WiFi settings and restart
+        WifiConfig::resetWiFiSettings();
     } else if (strcmp(command, "led") == 0) {
         const char* led = doc["led"];
         bool state = doc["state"];
