@@ -13,6 +13,12 @@ bool WifiConfig::begin() {
     return isConnected;
 }
 
-bool WifiConfig::isWifiConnected() { return WiFi.status() == WL_CONNECTED; }
+bool WifiConfig::isWifiConnected() { return WiFiClass::status() == WL_CONNECTED; }
 
 String WifiConfig::getLocalIP() { return WiFi.localIP().toString(); }
+
+void WifiConfig::resetWiFiSettings() {
+    WiFiManager wifiManager;
+    wifiManager.resetSettings();
+    ESP.restart();  // Restart ESP32 to apply changes
+}

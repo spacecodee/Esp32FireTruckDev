@@ -1,5 +1,7 @@
 #include "WebSocketConfig.h"
 
+#include <WiFiManager.h>
+
 #include "PinDefinitions.h"
 
 WebSocketConfig* WebSocketConfig::instance = nullptr;
@@ -144,6 +146,20 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
         response["speed_a"] = ledcRead(MOTOR_A_CHANNEL);
         response["speed_b"] = ledcRead(MOTOR_B_CHANNEL);
         sendData(response);
+    }
+    // Add this new else-if block
+    else if (strcmp(command, "wifi_reset") == 0) {
+        Serial.println("Resetting WiFi settings...");
+
+        // Send confirmation before resetting
+        JsonDocument response;
+        response["type"] = "wifi_reset";
+        response["status"] = "resetting";
+        sendData(response);
+
+        delay(1000);  // Give time for the response to be sent
+
+        // Reset WiFi settings and restart
     } else if (strcmp(command, "led") == 0) {
         const char* led = doc["led"];
         bool state = doc["state"];
@@ -209,7 +225,7 @@ void WebSocketConfig::moveServo() {
 void WebSocketConfig::sendEspConnectionData() {
     JsonDocument doc;
     doc["type"] = "connection";
-    doc["connected"] = (WiFiClass::status() == WL_CONNECTED);
+    doc["connected"] = WiFiClass::status() == WL_CONNECTED;
     sendData(doc);
 }
 

@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <ArduinoJson.h>
 #include <ESP32Servo.h>
 
 #include "PinDefinitions.h"
@@ -39,12 +38,12 @@ void setup() {
         webSocket.begin();
         webSocket.setServo(&myServo);
         Serial.println("WiFi Connected!");
-        Serial.println(wifi.getLocalIP());
+        Serial.println(WifiConfig::getLocalIP());
     }
 }
 
 void loop() {
-    if (!wifi.isWifiConnected()) {
+    if (!WifiConfig::isWifiConnected()) {
         digitalWrite(LED_PIN, LOW);
         stopMotors();                // Safety: stop motors if Wi-Fi disconnects
         ledcWrite(PUMP_CHANNEL, 0);  // Safety: stop pump if Wi-Fi disconnects
