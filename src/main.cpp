@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <ESP32Servo.h>
 
 #include "PinDefinitions.h"
 #include "WebSocketConfig.h"
@@ -9,11 +8,8 @@ class WifiConfig;
 WifiConfig wifi;
 WebSocketConfig webSocket(wifi);  // Pass wifi reference
 
-Servo myServo;
-
 void setupMotors();
 void stopMotors();
-void setupServo();
 void setupPump();
 void setupFlameSensors();
 
@@ -37,7 +33,6 @@ void setup() {
     if (wifi.begin()) {
         digitalWrite(LED_PIN, HIGH);
         webSocket.begin();
-        webSocket.setServo(&myServo);
         Serial.println("WiFi Connected!");
         Serial.println(WifiConfig::getLocalIP());
     }
@@ -60,16 +55,6 @@ void loop() {
             lastUpdate = millis();
         }
     }
-}
-
-void setupServo() {
-    ESP32PWM::allocateTimer(0);
-    ESP32PWM::allocateTimer(1);
-    ESP32PWM::allocateTimer(2);
-    ESP32PWM::allocateTimer(3);
-    myServo.setPeriodHertz(50);  // standard 50 hz servo
-    myServo.attach(MY_SERVO_PIN, 1000, 2000);
-    myServo.write(0);
 }
 
 void setupPump() {

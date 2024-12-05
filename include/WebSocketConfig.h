@@ -2,7 +2,6 @@
 #define WEBSOCKET_CONFIG_H
 
 #include <ArduinoJson.h>
-#include <ESP32Servo.h>
 #include <WebSocketsServer.h>
 #include <WifiConfig.h>
 
@@ -13,7 +12,6 @@ class WebSocketConfig {
 
     static int readFlameValue(int sensorPin);
     void handleCommand(const JsonDocument& doc);
-    Servo* servo{};        // Add servo pointer
     void sendLedStatus();  // Add this method declaration
 
    public:
@@ -21,11 +19,9 @@ class WebSocketConfig {
 
     void begin();
     void loop();
-    void moveServo();
     void sendData(const JsonDocument& doc);
     void sendEspConnectionData();
     void handleControlCommands(const JsonDocument& doc);
-    void setServo(Servo* s) { servo = s; }  // Add setter
     void sendFlameSensorData();
 
     static void moveForward();

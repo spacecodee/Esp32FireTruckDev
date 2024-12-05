@@ -180,8 +180,6 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
         response["led_red"] = digitalRead(LED_RED);
         response["led_green"] = digitalRead(LED_GREEN);
         sendData(response);
-    } else if (strcmp(command, "servo") == 0 && servo != nullptr) {
-        Serial.println("Received servo sweep command");
     } else if (strcmp(command, "pump") == 0) {
         bool state = doc["state"];
         Serial.printf("Pump Command - State: %d\n", state);
@@ -197,28 +195,6 @@ void WebSocketConfig::handleControlCommands(const JsonDocument& doc) {
         response["type"] = "pump_status";
         response["state"] = state;
         response["speed"] = state ? 255 : 0;
-        sendData(response);
-    }
-}
-
-void WebSocketConfig::moveServo() {
-    for (int pos = 0; pos <= 180; pos += 1) {
-        servo->write(pos);
-        delay(15);
-
-        JsonDocument response;
-        response["type"] = "servo_status";
-        response["position"] = pos;
-        sendData(response);
-    }
-
-    for (int pos = 180; pos >= 0; pos -= 1) {
-        servo->write(pos);
-        delay(15);
-
-        JsonDocument response;
-        response["type"] = "servo_status";
-        response["position"] = pos;
         sendData(response);
     }
 }

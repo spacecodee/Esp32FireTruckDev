@@ -8,9 +8,29 @@ interface.
 ### Hardware Control
 
 - LED Control System
-    - Red LED control
-    - Green LED control
-    - Individual LED status monitoring
+    - Red LED control (GPIO18)
+    - Green LED control (GPIO19)
+    - Built-in LED status (GPIO2)
+
+- Flame Detection System
+    - 3 flame sensors (GPIO34, 35, 32)
+    - Real-time flame intensity monitoring
+    - 1-100% intensity mapping
+
+- Motor Control System
+    - L298N motor driver integration
+    - 4-wheel drive control
+    - Directional movements:
+        - Forward/Backward
+        - Left/Right turns
+        - Diagonal movements (Forward-Left, Forward-Right, etc)
+    - Speed control via PWM
+    - Safety stop on WiFi disconnect
+
+- Water Pump System
+    - PWM-controlled water pump
+    - ON/OFF control
+    - Safety shutoff features
 
 ### Motor Control
 
@@ -19,6 +39,20 @@ interface.
     - Speed control for Motor B
     - Direction control
 - Real-time motor status feedback
+
+### Connectivity Features
+
+- WiFi Management
+    - Automatic WiFi portal configuration
+    - Remote WiFi reset capability
+    - Connection status monitoring
+    - Real-time status updates
+
+- WebSocket Communication
+    - Real-time bidirectional control
+    - JSON-based command structure
+    - Status feedback system
+    - Connection health monitoring
 
 ### Connectivity
 
