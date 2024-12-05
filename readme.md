@@ -60,6 +60,21 @@ interface.
 - WebSocket server for real-time communication
 - Web-based control interface
 
+### Pin Configuration
+All pin definitions are centralized in `include/PinDefinitions.h`:
+- Motor control pins (ENA, ENB, IN1-IN4)
+- LED indicators
+- Flame sensors
+- Water pump control
+
+### WebSocket Commands
+The system accepts JSON commands for:
+- Motor control
+- LED control
+- Pump control
+- WiFi reset
+- Sensor data requests
+
 ## Technologies Used
 
 ### Hardware
